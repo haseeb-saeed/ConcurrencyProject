@@ -3,6 +3,10 @@
 
 _Monitor Bank {
 
+    uCondition* benches;   
+    unsigned int* accounts;
+    const unsigned int numStudents;
+
   public:
     Bank( unsigned int numStudents );
     void deposit( unsigned int id, unsigned int amount );
