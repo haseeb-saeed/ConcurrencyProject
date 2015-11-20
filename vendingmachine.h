@@ -7,23 +7,26 @@
 
 _Task VendingMachine {
 
+    enum State { NONE, RESTOCK_BEGIN, RESTOCK_END };
+    
     Printer& printer;
     NameServer& nameServer;
     const unsigned int id;
     const unsigned int sodaCost;
     const unsigned int maxStockPerFlavour;
-    const unsigned int sodaTypes;
     unsigned int* stock;
 
     void main();
 
   public:
-    enum Flavours { COLA_COCA, DR_SALT, BLONDE_ALE, SEVEN_DOWN, NUM_TYPES = 4 };   // flavours of soda (YOU DEFINE)
+    enum Flavours { COLA_COCA = 0, DR_SALT = 1, BLONDE_ALE = 2, SEVEN_DOWN = 3, NUM_TYPES = 4 };   // flavours of soda (YOU DEFINE)
     _Event Funds {};                                            // insufficient funds
     _Event Stock {};                                            // out of stock for particular flavour
 
     VendingMachine( Printer &prt, NameServer &nameServer, unsigned int id, unsigned int sodaCost,
                     unsigned int maxStockPerFlavour );
+    ~VendingMachine();
+    
     void buy( Flavours flavour, WATCard &card );
     unsigned int *inventory();
     void restocked();
