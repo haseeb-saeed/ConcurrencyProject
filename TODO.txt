@@ -12,9 +12,7 @@ Haseeb:
 
     - Driver
     - Vending machine
-    - Nameserver
-    - Bank
-    - Parent
+    - Test Nameserver, Bank, Parent
 
 Max:
 

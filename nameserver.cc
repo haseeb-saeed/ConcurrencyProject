@@ -18,12 +18,22 @@ NameServer::NameServer( Printer& prt, unsigned int numVendingMachines, unsigned 
 }
 
 //-------------------------------------------------------------------
+// Destructor for nameserver task
+//-------------------------------------------------------------------
+NameServer::~NameServer() {
+    
+    // Free resources
+    delete [] machineList;
+    delete [] studentMachines;   
+}
+
+//-------------------------------------------------------------------
 // Registers a vending machine with the nameserver
 //-------------------------------------------------------------------
 void NameServer::VMregister( VendingMachine* vendingmachine ) {
 
     machineList[vendingmachine->getId()] = vendingmachine;
-    printer.print( Printer::Kind::NameServer, 'S' );
+    printer.print( Printer::Kind::NameServer, 'R', vendingmachine->getId() );
 }
 
 //-------------------------------------------------------------------
@@ -34,7 +44,9 @@ VendingMachine* NameServer::getMachine( unsigned int id ) {
     unsigned int index = studentMachines[id];
     studentMachines[id] = ( index + 1 ) % numVMs;
 
-    return machineList[index];
+    VendingMachine* result = machineList[index];
+    printer.print( Printer::Kind::NameServer, 'N', id, result->getId() );
+    return result;
 }
 
 //-------------------------------------------------------------------
@@ -53,6 +65,8 @@ void NameServer::main() {
     for ( ;; ) {
 
         _Accept( ~NameServer ) {
+    
+            printer.print( Printer::Kind::NameServer, 'F' );
             break;
         } or _When( numRegistered < numVMs ) _Accept( VMregister ) {
 

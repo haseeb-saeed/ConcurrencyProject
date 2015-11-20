@@ -21,6 +21,16 @@ Bank::Bank( unsigned int numStudents )
 }
 
 //---------------------------------------------------------------
+// Destructor for Bank class
+//---------------------------------------------------------------
+Bank::~Bank() {
+    
+    // Free resources
+    delete [] accounts;  
+    delete [] benches;
+}
+
+//---------------------------------------------------------------
 // Deposit to an account
 //---------------------------------------------------------------
 void Bank::deposit( unsigned int id, unsigned int amount ) {
