@@ -1,3 +1,7 @@
+#include "printer.h"
+#include "nameserver.h"
+#include "bottlingplant.h"
+
 #ifndef __TRUCK_H__
 #define __TRUCK_H__
 

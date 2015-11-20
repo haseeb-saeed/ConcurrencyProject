@@ -1,7 +1,7 @@
 #ifndef __PRINTER_H__
 #define __PRINTER_H__
 
-_Monitor / _Cormonitor Printer {
+_Monitor Printer {
 
   public:
     enum Kind { Parent, Groupoff, WATCardOffice, NameServer, Truck, BottlingPlant, Student, Vending, Courier };

@@ -1,3 +1,6 @@
+#include "nameserver.h"
+#include "printer.h"
+
 #ifndef __BOTTLINGPLANT_H__
 #define __BOTTLINGPLANT_H__
 

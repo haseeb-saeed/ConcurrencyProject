@@ -3,6 +3,8 @@
 
 class WATCard {
 
+    unsigned int balance;
+
     WATCard( const WATCard & );            // prevent copying
     WATCard &operator=( const WATCard & );
 
