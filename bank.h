@@ -3,7 +3,7 @@
 
 _Monitor Bank {
 
-    uCondition* benches;   
+    uCondition* benches;
     unsigned int* accounts;
     const unsigned int numStudents;
 

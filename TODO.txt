@@ -1,9 +1,23 @@
 TODO:
-    - Make this TODO file
+    - Config is done
+    - Bank, Parent, Watcard need testing
+    - Work on vending machine, truck, plant, printer, group off
 
+    - Student and watcard office for later
+    - Makefile
+    - Driver
+    - Testdoc ( Leave this unil Sunday 4pm )
 
 Haseeb:
 
-
+    - Driver
+    - Vending machine
+    - Nameserver
+    - Bank
+    - Parent
 
 Max:
+
+    - Group off
+    - Makefile
+    - Printer

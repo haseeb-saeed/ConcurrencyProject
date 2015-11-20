@@ -1,6 +1,6 @@
 #include "watcard.h"
 #include "printer.h"
-#include "bank.h""
+#include "bank.h"
 
 #ifndef __WATCARDOFFICE_H__
 #define __WATCARDOFFICE_H__
@@ -8,9 +8,9 @@
 _Task WATCardOffice {
 
     struct Args {
-        
-        Args(); 
-    }
+
+        Args();
+    };
 
     struct Job {                           // marshalled arguments and return future
         Args args;                         // call arguments (YOU DEFINE "Args")
@@ -19,11 +19,11 @@ _Task WATCardOffice {
     };
 
     _Task Courier {
-    
+
         void main();
-        
+
       public:
-        Courier();   
+        Courier();
     };
 
     Printer& printer;

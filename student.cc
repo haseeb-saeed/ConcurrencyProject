@@ -2,13 +2,14 @@
 #include "printer.h"
 #include "nameserver.h"
 #include "groupoff.h"
+#include "watcardoffice.h"
 
 //--------------------------------------------------------------
 // Student task constructor
 //--------------------------------------------------------------
 Student::Student( Printer &printer, NameServer &nameServer, WATCardOffice &cardOffice, Groupoff &groupoff,
     unsigned int id, unsigned int maxPurchases )
-    : printer( printer ), nameserver( nameserver ), cardoffice( cardoffice ), groupoff ( groupoff )
+    : printer( printer ), nameServer( nameServer ), cardOffice( cardOffice ), groupoff ( groupoff ),
     id( id ), maxPurchases( maxPurchases ) {
 
 }
@@ -16,6 +17,6 @@ Student::Student( Printer &printer, NameServer &nameServer, WATCardOffice &cardO
 //--------------------------------------------------------------
 // Student task main function
 //--------------------------------------------------------------
-Student::main() {
+void Student::main() {
 
 }

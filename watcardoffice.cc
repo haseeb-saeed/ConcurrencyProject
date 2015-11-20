@@ -2,39 +2,41 @@
 #include "watcard.h"
 #include "printer.h"
 #include "bank.h"
-   
+
 WATCardOffice::Args::Args() {
-    
+
 }
 
 WATCardOffice::Job::Job( Args args )
     : args( args ) {
-    
+
 }
-    
+
 WATCardOffice::Courier::Courier() {
-    
+
 }
 
 void WATCardOffice::Courier::main() {
-    
+
 }
 
-WATCardOffice::WATCardOffice( Printer &prt, Bank &bank, unsigned int numCouriers ) {
-    : printer( prt ), bank( bank ), numCouriers( numCouriers );
-   
+WATCardOffice::WATCardOffice( Printer &prt, Bank &bank, unsigned int numCouriers )
+    : printer( prt ), bank( bank ), numCouriers( numCouriers ) {
+
 }
 
 WATCard::FWATCard WATCardOffice::create( unsigned int sid, unsigned int amount ) {
-    
+	return nullptr;
 }
 
 WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount, WATCard* card ) {
-    
+	return nullptr;
 }
 
 WATCardOffice::Job* WATCardOffice::requestWork() {
-    
+	return nullptr;
 }
 
-void WATCardOffice::main();
+void WATCardOffice::main() {
+
+}

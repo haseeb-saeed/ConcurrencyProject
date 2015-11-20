@@ -17,13 +17,13 @@ Bank::Bank( unsigned int numStudents )
     benches = new uCondition [numStudents];
 
     // For now, crash if allocation fails
-    assert( accounts != nullptr && accounts != nullptr );
+    assert( accounts != nullptr && benches != nullptr );
 }
 
 //---------------------------------------------------------------
 // Deposit to an account
 //---------------------------------------------------------------
-Bank::deposit( unsigned int id, unsigned int amount ) {
+void Bank::deposit( unsigned int id, unsigned int amount ) {
 
     // Add funds to account
     accounts[id] += amount;
@@ -33,13 +33,12 @@ Bank::deposit( unsigned int id, unsigned int amount ) {
     if ( !benches[id].empty() && benches[id].front() <= accounts[id] ) {
         benches[id].signal();
     }
-
 }
 
 //---------------------------------------------------------------
 // Withdraw from an account
 //---------------------------------------------------------------
-Bank::withdraw( unsigned int id, unsigned int amount ) {
+void Bank::withdraw( unsigned int id, unsigned int amount ) {
 
     // If there is not enough money, block
     if ( amount > accounts[id] ) {

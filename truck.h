@@ -7,6 +7,12 @@
 
 _Task Truck {
 
+    Printer& printer;
+    NameServer& nameServer;
+    BottlingPlant& plant;
+    const unsigned int numVendingMachines,
+                       maxStockPerFlavour;
+
     void main();
 
   public:

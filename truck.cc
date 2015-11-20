@@ -4,11 +4,11 @@
 #include "bottlingplant.h"
 
 Truck::Truck( Printer &prt, NameServer &nameServer, BottlingPlant &plant,
-           unsigned int numVendingMachines, unsigned int maxStockPerFlavour ) {
-    
+           unsigned int numVendingMachines, unsigned int maxStockPerFlavour ) : printer( prt ), nameServer( nameServer ), plant( plant ), numVendingMachines( numVendingMachines ), maxStockPerFlavour( maxStockPerFlavour )  {
+
 }
 
-Truck::main() {
-    
-    
+void Truck::main() {
+
+
 }

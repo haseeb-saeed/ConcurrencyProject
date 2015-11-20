@@ -18,7 +18,7 @@ _Task VendingMachine {
     void main();
 
   public:
-    enum Flavours { COLA_COCA, DR_SALT, BLONDE_ALE, 7_DOWN };   // flavours of soda (YOU DEFINE)
+    enum Flavours { COLA_COCA, DR_SALT, BLONDE_ALE, SEVEN_DOWN, NUM_TYPES = 4 };   // flavours of soda (YOU DEFINE)
     _Event Funds {};                                            // insufficient funds
     _Event Stock {};                                            // out of stock for particular flavour
 

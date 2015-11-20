@@ -1,6 +1,8 @@
 #ifndef __WATCARD_H__
 #define __WATCARD_H__
 
+#include <uFuture.h>
+
 class WATCard {
 
     unsigned int balance;

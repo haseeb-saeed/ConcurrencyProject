@@ -1,5 +1,6 @@
 #include "parent.h"
 #include "printer.h"
+#include "MPRNG.h"
 #include "bank.h"
 
 // External mprng
@@ -16,8 +17,9 @@ Parent::Parent( Printer& printer, Bank& bank, unsigned int numStudents, unsigned
 //----------------------------------------------------------------------------
 // Main function for Parent class
 //----------------------------------------------------------------------------
-Parent::main() {
+void Parent::main() {
 
+    // Indicate we have started
     printer.print( Printer::Kind::Parent, 'S' );
 
     for ( ;; ) {
@@ -35,7 +37,7 @@ Parent::main() {
             unsigned int amount = mprng( 1, 3 );
 
             printer.print( Printer::Kind::Parent, 'D', student, amount );
-            bank.deposit( students, amount );
+            bank.deposit( student, amount );
         }
     }
 }

@@ -8,6 +8,13 @@ _Task VendingMachine;
 
 _Task NameServer {
 
+    Printer& printer;
+    const unsigned int numVMs;
+    const unsigned int numStudents;
+    VendingMachine** machineList;
+    unsigned int* studentMachines;
+    unsigned int numRegistered;
+
     void main();
 
   public:

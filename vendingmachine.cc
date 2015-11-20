@@ -15,14 +15,14 @@ VendingMachine::VendingMachine( Printer& printer, NameServer& nameServer, unsign
     }
 }
 
-void main() {
+void VendingMachine::main() {
 
     // Register with nameserver
     nameServer.VMregister( this );
 
 }
 
-void VendingMachine::buy( Flavour flavour, WATCard& card ) {
+void VendingMachine::buy( Flavours flavour, WATCard& card ) {
 
 }
 
