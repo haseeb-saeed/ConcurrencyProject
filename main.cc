@@ -1,12 +1,21 @@
-#include "MPRNG.h"
-#include "bank.h"
-#include "parent.h"
-#include "printer.h"
-#include "nameserver.h"
-#include "vendingmachine.h"
-#include <iostream>
-using namespace std;
+#include <iostream>                 // C++ std I/O
+#include <sstream>                  // stringstream class
+#include "MPRNG.h"                  // MPRNG class
+#include "bank.h"                   // Bank class
+#include "bottlingplant.h"          // BottlingPlant class
+#include "config.h"                 // ConfigParms class
+#include "groupoff.h"               // Groupoff class
+#include "nameserver.h"             // NameServer class
+#include "parent.h"                 // Parent class
+#include "printer.h"                // Printer class
+#include "student.h"                // Student class
+#include "vendingmachine.h"         // VendingMachine class
+#include "watcardoffice.h"          // WATCardOffice class
+#include <unistd.h>                 // getpid
+using namespace std;                // direct access to std
+#include <cstdlib>                  // exit
 
+// Random number generator
 MPRNG mprng;
 
 void testBank() {
@@ -106,7 +115,114 @@ void testNameServer() {
     }
 }
 
-void uMain::main() {
+//-------------------------------------------------------------------------
+// Converts a C-style string to an integer
+//-------------------------------------------------------------------------
+bool convert( int &val, char *buffer ) {
 
-    testNameServer();          
+    std::stringstream ss( buffer );     
+    ss >> dec >> val;                  
+
+    // Was the conversion succssful?
+    return !ss.fail() &&          
+        string( buffer ).find_first_not_of( " ", ss.tellg() ) == string::npos;
+}
+
+//-------------------------------------------------------------------------
+// Output a usage message to cerr and terminate
+//-------------------------------------------------------------------------
+void usage( const string& prog ) {
+
+    // Print usage message
+    cerr << "Usage: " << prog
+    << " [ config-file [ random-seed (> 0) ] ]"
+    << endl;
+ 
+    // Terminate with a failure exit code   
+    exit( EXIT_FAILURE );              
+} 
+
+/*
+//-------------------------------------------------------------------------
+// Output a memory allocation failure  message to cerr and terminate
+//-------------------------------------------------------------------------
+void alloc_fail() {
+
+    // Print error message
+    cerr << "Memory allocation failed! Aborting." << endl;
+
+     // Terminate with a failure exit code   
+    exit( EXIT_FAILURE );            
+}
+*/
+
+//-------------------------------------------------------------------------
+// Entry point for program
+//-------------------------------------------------------------------------
+void uMain::main() {
+    
+    string configFile = "soda.config";
+    int seed = getpid();
+
+    // Parse command line arguments
+    switch ( argc ) {
+      // Seed
+      case 3:
+        if ( !convert( seed, argv[2] ) || seed <= 0 ) {
+            usage( argv[0] );
+        }
+      // Config file
+      case 2:
+        configFile = argv[1]; 
+      // Default usage
+      case 1:
+        break;
+      // Wrong number of arguments
+      default:     
+        usage( argv[0] );
+    }
+
+    // Seed the random number generator
+    mprng.seed( seed );
+
+    // Parse the configurations
+    ConfigParms cparms;
+    processConfigFile( configFile.c_str(), cparms );
+
+    // Create objects for soda delivery
+    Printer printer( cparms.numStudents, cparms.numVendingMachines, cparms.numCouriers );
+    Bank bank( cparms.numStudents );
+    Parent parent( printer, bank, cparms.numStudents, cparms.parentalDelay );
+    WATCardOffice office( printer, bank, cparms.numCouriers );
+    Groupoff groupoff( cparms.numStudents, cparms.sodaCost, cparms.groupoffDelay );
+    NameServer server( printer, cparms.numVendingMachines, cparms.numStudents );
+    
+    // Create vending machines
+    VendingMachine* machines [cparms.numVendingMachines];
+
+    for ( unsigned int i = 0; i < cparms.numVendingMachines; i += 1 ) {
+        machines[i] = new VendingMachine( printer, server, i, cparms.sodaCost, cparms.maxStockPerFlavour );
+    }
+
+    {    
+        // Create bottling plant
+        BottlingPlant plant( printer, server, cparms.numVendingMachines, cparms.maxShippedPerFlavour,
+            cparms.maxStockPerFlavour, cparms.timeBetweenShipments );
+
+        // Create students
+        Student* students [cparms.numStudents];
+        for ( unsigned int i = 0; i < cparms.numStudents; i += 1 ) {
+            students[i] = new Student( printer, server, office, groupoff, i, cparms.maxPurchases );
+        }
+
+        // Wait for students to finish purchases
+        for ( unsigned int i = 0; i < cparms.numStudents; i += 1 ) {
+            delete students[i];
+        }
+    }
+
+    // Shut down vending machines
+    for ( unsigned int i = 0; i < cparms.numVendingMachines; i += 1 ) {
+        delete machines[i];
+    }
 }

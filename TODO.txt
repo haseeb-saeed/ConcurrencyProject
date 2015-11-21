@@ -1,23 +1,10 @@
 TODO:
-    - Config is done
-    - Bank, Parent, Watcard need testing
-    - Work on vending machine, truck, plant, printer, group off
-
+    - Work on truck, plant, printer, group off
     - Student and watcard office for later
-    - Makefile
-    - Driver
     - Testdoc ( Leave this unil Sunday 4pm )
 
 Haseeb:
 
-    - Driver
-    - Vending machine
-    - Test Nameserver, Bank, Parent
-
-    Done:
-        - Bank implementation and testing
-        - Parent implementation and testing
-        - Watcard implementation and testing
 Max:
 
     - Group off
