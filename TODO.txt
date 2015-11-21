@@ -14,6 +14,10 @@ Haseeb:
     - Vending machine
     - Test Nameserver, Bank, Parent
 
+    Done:
+        - Bank implementation and testing
+        - Parent implementation and testing
+        - Watcard implementation and testing
 Max:
 
     - Group off
