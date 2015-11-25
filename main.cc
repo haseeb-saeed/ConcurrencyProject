@@ -115,6 +115,60 @@ void testNameServer() {
     }
 }
 
+void testOffice() {
+
+    _Task officeTest {
+
+        void main() {
+            
+            for ( ;; ) {
+                try {
+
+                    _Enable {
+
+                        WATCard::FWATCard card = office.create( id, 5 );
+                        cout << id << " balance is " << card()->getBalance() << endl;
+   
+                        while ( card()->getBalance() < 15 ) {
+                            card = office.transfer( id, 5, card() );
+                            cout << id << " balance is " << card()->getBalance() << endl;
+                        }
+                        
+                        card.cancel();
+                        delete card();
+                        break;
+                    }
+                } catch ( WATCardOffice::Lost ex ) {
+                    cout << id << " watcard lost - restart " << endl;
+                    continue;
+                }       
+            }
+        }
+
+        WATCardOffice& office;
+        const unsigned int id;
+
+      public:
+        officeTest( WATCardOffice& office, unsigned int id )
+            : office( office ), id( id ) {}
+
+    };
+
+    const int NUM_STUDENTS = 3;
+    const int NUM_COURIERS = 7;
+
+    Bank bank( NUM_STUDENTS );
+    Printer printer( NUM_STUDENTS, 1, NUM_COURIERS );
+    Parent parent( printer, bank, NUM_STUDENTS, 5 );
+    WATCardOffice office( printer, bank, NUM_COURIERS );
+
+    officeTest t0( office, 0 );
+    officeTest t1( office, 1 );
+    officeTest t2( office, 2 );
+    //officeTest t3( office, 3 );
+    //officeTest t4( office, 4 );
+}
+
 //-------------------------------------------------------------------------
 // Converts a C-style string to an integer
 //-------------------------------------------------------------------------
@@ -160,7 +214,10 @@ void alloc_fail() {
 // Entry point for program
 //-------------------------------------------------------------------------
 void uMain::main() {
+
+    testOffice();
     
+/*
     string configFile = "soda.config";
     int seed = getpid();
 
@@ -225,4 +282,5 @@ void uMain::main() {
     for ( unsigned int i = 0; i < cparms.numVendingMachines; i += 1 ) {
         delete machines[i];
     }
+    */
 }
