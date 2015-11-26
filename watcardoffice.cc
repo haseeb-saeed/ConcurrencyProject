@@ -8,7 +8,7 @@
 #include <iostream>
 using namespace std;
 
-// External random number generatori
+// External random number generator
 extern MPRNG mprng;
 
 WATCardOffice::Args::Args( unsigned int sid, unsigned int amount, WATCard* card )
@@ -30,13 +30,12 @@ void WATCardOffice::Courier::main() {
 
     // Indicate the courier has started
     office.printer.print( Printer::Kind::Courier, id, 'S' );
-    cout << "courier start " << id << endl;
 
     for ( ;; ) {
 
         // Request work
         Job* job = office.requestWork();
-      if ( job == nullptr ) break;
+        if ( job == nullptr ) break;
 
         // Get the WATCard
         WATCard* card = job->args.card;
@@ -47,10 +46,8 @@ void WATCardOffice::Courier::main() {
 
         // Withdraw the amount from the bank and add it to the card
         office.printer.print( Printer::Kind::Courier, id, 't', sid, amount );
-        cout << "courier transfer begin " << id << " " << sid << " " << amount << endl;
         office.bank.withdraw( sid, amount );
         office.printer.print( Printer::Kind::Courier, id, 'T', sid, amount );
-        cout << "courier transfer end " << id << " " << sid << " " << amount << endl;
         card->deposit( amount );
 
         // Did we lose the WATCard?
@@ -70,7 +67,6 @@ void WATCardOffice::Courier::main() {
 
     // Indicate the courier has finished
     office.printer.print( Printer::Kind::Courier, id, 'F' );
-    cout << "courier finished " << id << endl;
 }
 
 WATCardOffice::WATCardOffice( Printer &prt, Bank &bank, unsigned int numCouriers )
@@ -106,7 +102,6 @@ WATCard::FWATCard WATCardOffice::create( unsigned int sid, unsigned int amount )
 
     // Indicate the create call is complete
     printer.print( Printer::Kind::WATCardOffice, 'C', sid, amount );
-    cout << "office create " << sid << " " << amount << " " << endl;    
 
     // Return the future value
 	return job->result;
@@ -121,9 +116,8 @@ WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount
 
     // Indicate the transfer call is complete
     printer.print( Printer::Kind::WATCardOffice, 'T', sid, amount );
-    cout << "office transfer " << sid << " " << amount << " " << endl;    
 
-    // Return the future value    
+    // Return the future value
     return job->result;
 }
 
@@ -131,7 +125,6 @@ WATCardOffice::Job* WATCardOffice::requestWork() {
 
     // If there is no work, block
     if ( jobs.empty() ) {
-        cout << "No job, I'm going to sleep" << endl;
         numWaiting += 1;
         bench.wait();
         numWaiting -= 1;
@@ -148,7 +141,6 @@ WATCardOffice::Job* WATCardOffice::requestWork() {
 
     // Indicate the request call is complete
     printer.print( Printer::Kind::WATCardOffice, 'W' );
-    cout << "office request " << endl;    
     return job;
 }
 
@@ -156,22 +148,19 @@ void WATCardOffice::main() {
 
     // Indicate the office is starting
     printer.print( Printer::Kind::WATCardOffice, 'F' );
-    
+
     for ( ;; ) {
 
         // Accept destructor once all couriers have completed their jobs
         _When( numWaiting == numCouriers) _Accept( ~WATCardOffice ) {
 
-            cout << "office has been told to finish " << endl;    
-            
             // Wake up the blocked couriers
             while ( !bench.empty() ) {
                 bench.signalBlock();
              }
-            
+
             // Indicate the office is closing
             printer.print( Printer::Kind::WATCardOffice, 'F' );
-            cout << "office finishing " << endl;    
             break;
 
         } or _Accept( create, transfer ) {

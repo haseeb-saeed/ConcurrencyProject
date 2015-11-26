@@ -1,12 +1,20 @@
 #include <iostream>
 #include "printer.h"
+
 using namespace std;
 
-static const unsigned int
-CONST_HEADER_SIZE = 6;
+enum CONST_FIXED_HEADERS {
+    PARENT   = 0,
+    GROUPOFF,
+    WATOFF,
+    NAMES,
+    TRUCK,
+    PLANT,
+    FIXED_HEADER_COUNT
+};
 
 static const char*
-CONST_PRINTER_HEADERS[] = {
+CONST_STR_PRINTER_HEADERS[] = {
 	"Parent",
 	"Gropoff",
 	"WATOff",
@@ -19,52 +27,70 @@ Printer::Printer( unsigned int numStudents, unsigned int numVendingMachines, uns
 
 	unsigned int i;
 
-	bufferSize = numStudents + numVendingMachines + numCouriers + CONST_HEADER_SIZE;
-        buffer = new struct data[bufferSize];
+	bufferSize = numStudents +
+                 numVendingMachines +
+                 numCouriers +
+                 FIXED_HEADER_COUNT;
 
-        for (i = 0; i < numStudents; i++) {
-	   buffer[i].active = false;
-        }
+    buffer = new struct data[bufferSize];
 
-        for (i = 0; i < CONST_HEADER_SIZE; i++) {
-	   cout << CONST_PRINTER_HEADERS[i] << "\t";
-        }
+    for (i = 0; i < numStudents; i++) {
+        buffer[i].active = false;
+    }
+
+    for (i = 0; i < FIXED_HEADER_COUNT; i++) {
+        cout << CONST_STR_PRINTER_HEADERS[i] << "\t";
+    }
 
 	for (i = 0; i < numStudents; i++) {
-	   cout << "Stud" << i << "\t";
+        cout << "Stud" << i << "\t";
 	}
 
-        for (i = 0; i < numVendingMachines; i++) {
-           cout << "Mach" << i << "\t";
-        }
+    for (i = 0; i < numVendingMachines; i++) {
+        cout << "Mach" << i << "\t";
+    }
 
-        for (i = 0; i < numCouriers; i++) {
-	   cout << "Cour" << i << "\t";
-        }
+    for (i = 0; i < numCouriers; i++) {
+        cout << "Cour" << i << "\t";
+    }
 
-        for (i = 0; i < bufferSize; i++) {
-           cout << "******\t";
-        }
+    cout << endl;
 
-        cout << endl;
+    for (i = 0; i < bufferSize; i++) {
+        cout << "*****\t";
+    }
+
+    cout << endl;
 }
 
 Printer::~Printer() {
-        delete[] buffer;
+    delete[] buffer;
 }
 
 unsigned int Printer::getKindIndex( Kind kind ) {
-	/*switch (kind) {
-		// TODO
-	}*/
-
-	return 0;
+	switch (kind)
+    {
+        case Parent:
+            return PARENT;
+        case Groupoff:
+            return GROUPOFF;
+        case WATCardOffice:
+            return WATOFF;
+        case NameServer:
+            return NAMES;
+        case Truck:
+            return TRUCK;
+        case BottlingPlant:
+            return PLANT;
+		default:
+            return 0;
+	}
 }
 
 void Printer::_print( Kind kind, unsigned int lid, char state, int value1, int value2 ) {
 	if (buffer[lid].active) {
-		// TODO: Flush
-        }
+	   // TODO: Flush
+    }
 
 	buffer[lid].active = true;
 	buffer[lid].kind = kind;
