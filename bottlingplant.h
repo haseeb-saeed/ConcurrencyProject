@@ -10,11 +10,14 @@ _Task Truck;
 _Task BottlingPlant {
 
     Printer& printer;
-    Truck* truck;
+    NameServer& nameServer;
+    const unsigned int numVendingMachines;
     const unsigned int maxShippedPerFlavour;
+    const unsigned int maxStockPerFlavour;
     const unsigned int timeBetweenShipments;
     unsigned int* shipment;
     bool shutdown;
+
     void main();
 
   public:

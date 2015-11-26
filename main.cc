@@ -89,8 +89,8 @@ void uMain::main() {
     Bank bank( cparms.numStudents );
     Parent parent( printer, bank, cparms.numStudents, cparms.parentalDelay );
     WATCardOffice office( printer, bank, cparms.numCouriers );
-    Groupoff groupoff( cparms.numStudents, cparms.sodaCost, cparms.groupoffDelay );
     NameServer server( printer, cparms.numVendingMachines, cparms.numStudents );
+    Groupoff groupoff( cparms.numStudents, cparms.sodaCost, cparms.groupoffDelay );
 
     // Create vending machines
     VendingMachine* machines [cparms.numVendingMachines];
