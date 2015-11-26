@@ -2,6 +2,8 @@
 #include "printer.h"
 #include "nameserver.h"
 #include "watcard.h"
+#include <iostream>
+using namespace std;
 
 VendingMachine::VendingMachine( Printer& printer, NameServer& nameServer, unsigned int id,
     unsigned int sodaCost, unsigned int maxStockPerFlavour )
@@ -13,11 +15,13 @@ VendingMachine::VendingMachine( Printer& printer, NameServer& nameServer, unsign
     stock = new unsigned int [numTypes];
 
     for ( unsigned int i = 0; i < numTypes; i += 1 ) {
-        stock[i] = 0;
+        stock[i] = 1;
     }
 }
 
 VendingMachine::~VendingMachine() {
+
+    cout << "destructing vending machine " << id << endl;
 
     // Free resources
     delete [] stock;    

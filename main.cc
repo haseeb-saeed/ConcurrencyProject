@@ -160,13 +160,34 @@ void testOffice() {
     Bank bank( NUM_STUDENTS );
     Printer printer( NUM_STUDENTS, 1, NUM_COURIERS );
     Parent parent( printer, bank, NUM_STUDENTS, 5 );
+    
+    
     WATCardOffice office( printer, bank, NUM_COURIERS );
 
     officeTest t0( office, 0 );
     officeTest t1( office, 1 );
     officeTest t2( office, 2 );
-    //officeTest t3( office, 3 );
-    //officeTest t4( office, 4 );
+}
+
+void testStudent() {
+    
+    const int NUM_STUDENTS = 1;
+    const int NUM_COURIERS = 1;
+    const int NUM_MACHINES = 2;
+    const int SODA_COST = 6;
+
+    mprng.seed( getpid() );
+
+    Bank bank( NUM_STUDENTS );
+    Printer printer( NUM_STUDENTS, NUM_MACHINES, NUM_COURIERS );
+    Parent parent( printer, bank, NUM_STUDENTS, 5 );
+    WATCardOffice office( printer, bank, NUM_COURIERS );
+    Groupoff groupoff( NUM_STUDENTS, SODA_COST, 5 );
+    NameServer server( printer, NUM_MACHINES, NUM_STUDENTS );    
+
+    VendingMachine m0( printer, server, 0, SODA_COST, 10 );
+    VendingMachine m1( printer, server, 1, SODA_COST, 10 );
+    Student student( printer, server, office, groupoff, 0, 1 );
 }
 
 //-------------------------------------------------------------------------
@@ -215,7 +236,7 @@ void alloc_fail() {
 //-------------------------------------------------------------------------
 void uMain::main() {
 
-    testOffice();
+    testStudent();
     
 /*
     string configFile = "soda.config";
