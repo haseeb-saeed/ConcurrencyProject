@@ -10,35 +10,42 @@ Groupoff::Groupoff( unsigned int numStudents, unsigned int sodaCost, unsigned in
       sodaCost(sodaCost),
       groupoffDelay(groupoffDelay) {
 
+    giftCards = new WATCard::FWATCard[numStudents];
+}
+
+Groupoff::~Groupoff() {
+    delete[] giftCards;
 }
 
 WATCard::FWATCard Groupoff::giftCard() {
-    WATCard::FWATCard card;
-    giftCards.push_back(card);
-    return card;
+    return giftCards[numGiftCards++];
 }
 
 void Groupoff::main() {
     WATCard::FWATCard fcard;
+    unsigned int i;
     WATCard* card;
 
+    i = 0;
     while (true) {
         _Accept ( ~Groupoff ) {
             break;
         } or _When (numGiftCards < numStudents) _Accept( giftCard ) {
-            numGiftCards++;
+
         } _Else {
-            if (!giftCards.empty()) {
+
+            if (numStudents == numGiftCards) {
+
                 yield( groupoffDelay );
-
-                fcard = giftCards.back();
-                giftCards.pop_back();
-
                 card = new WATCard();
                 card->deposit(sodaCost);
-                fcard.delivery(card);
-            } else if (numGiftCards == numStudents) {
-                break;
+
+                // TODO: Select at random
+                giftCards[i++].delivery(card);
+
+                if (i == numStudents) {
+                    break;
+                }
             }
         }
     }

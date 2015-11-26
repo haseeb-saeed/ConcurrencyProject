@@ -6,11 +6,13 @@
 
 _Task Groupoff {
     unsigned int numStudents, numGiftCards, sodaCost, groupoffDelay;
-    std::deque<WATCard::FWATCard> giftCards;
+    WATCard::FWATCard* giftCards;
     void main();
 
   public:
     Groupoff( unsigned int numStudents, unsigned int sodaCost, unsigned int groupoffDelay );
+    ~Groupoff();
+
     WATCard::FWATCard giftCard();
 };
 
