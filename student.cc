@@ -83,7 +83,7 @@ L1: for ( ;; ) {
                     purchase += 1;
                     break L2;
                 }
-            } catch ( WATCardOffice::Lost& lost ) {
+            } catch ( WATCardOffice::Lost ) {
                 // Get a new WATCard, but don't yield
                 watCard.reset();
                 watCard = cardOffice.create( id, 5 );
@@ -106,10 +106,14 @@ L1: for ( ;; ) {
     }
 
     // If the giftcard hasn't been used, free its memory
-    if ( usedGiftCard ) {
+    if ( !usedGiftCard ) {
         delete giftCard();    
     }
-    delete watCard();
+
+    try {
+        delete watCard();
+    } catch ( WATCardOffice::Lost ) {
+    }      
 
     // Indicate the student has finished
     printer.print( Printer::Kind::Student, id, 'F' );
