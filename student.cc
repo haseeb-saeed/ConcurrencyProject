@@ -35,10 +35,11 @@ void Student::main() {
     cout << "student " << id << " starting" << endl;
 
     // Get cards and vending machine location
-    VendingMachine* machine = nameServer.getMachine( id );
     WATCard::FWATCard watCard = cardOffice.create( id, 5 );
-    //WATCard::FWATCard giftCard = groupoff.giftCard();
+    WATCard::FWATCard giftCard = groupoff.giftCard();
+    VendingMachine* machine = nameServer.getMachine( id );
     unsigned int purchase = 0;
+    bool usedGiftCard = false;
 
     printer.print( Printer::Kind::Student, id, 'V', machine->getId() );
     cout << "student " << id << " machine " << machine->getId() << endl;
@@ -57,7 +58,7 @@ L1: for ( ;; ) {
             try {
                 _Enable {
 
-                     /* _Select( giftCard ) {
+                     _Select( giftCard ) {
 
                         // Buy the soda
                         cout << "student " << id << " buying with gift card " << endl;
@@ -68,8 +69,9 @@ L1: for ( ;; ) {
                         // Reset the gift card to prevent further use
                         delete giftCard();
                         giftCard.reset();
+                        usedGiftCard = true;
                     
-                    } or */_Select( watCard ) {
+                    } or _Select( watCard ) {
 
                         // Buy the soda
                         cout << "student " << id << " buying with watcard " << endl;
@@ -83,9 +85,7 @@ L1: for ( ;; ) {
                 }
             } catch ( WATCardOffice::Lost& lost ) {
                 // Get a new WATCard, but don't yield
-                //delete watCard();
                 watCard.reset();
-    
                 watCard = cardOffice.create( id, 5 );
                 printer.print( Printer::Kind::Student, id, 'L' );
                 cout << "student " << id << " lost card" << endl;
@@ -105,10 +105,11 @@ L1: for ( ;; ) {
         }
     }
 
-    // TODO: The case of a student who only buys one drink with the gift card
-    // Should we just cancel the WATCard?
+    // If the giftcard hasn't been used, free its memory
+    if ( usedGiftCard ) {
+        delete giftCard();    
+    }
     delete watCard();
-    //delete giftCard();
 
     // Indicate the student has finished
     printer.print( Printer::Kind::Student, id, 'F' );

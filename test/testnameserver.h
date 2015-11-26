@@ -1,10 +1,11 @@
 #ifndef __TEST_NAMESERVER__
 #define __TEST_NAMESERVER__
 
-#include <printer>
-#include <nameserver>
-#include <watcard>
-#include <vendingmachine>
+#include <iostream>
+#include <printer.h>
+#include <nameserver.h>
+#include <watcard.h>
+#include <vendingmachine.h>
 
 void testNameServer() {
 
@@ -16,7 +17,7 @@ void testNameServer() {
         void main() {
 
             for ( int i = 0; i < 5; i += 1 )
-                osacquire( cout ) << "id " << id << " machine " << server.getMachine( id ) << endl;
+                std::cout << "id " << id << " machine " << server.getMachine( id ) << std::endl;
         }
 
       public:
@@ -43,9 +44,9 @@ void testNameServer() {
         VendingMachine v1( printer, server, 1, 5, 5 );
         VendingMachine v2( printer, server, 2, 5, 5 );
 
-        osacquire(cout) << "v0 " << &v0 << endl;
-        osacquire(cout) << "v1 " << &v1 << endl;
-        osacquire(cout) << "v2 " << &v2 << endl;
+        std::cout << "v0 " << &v0 << std::endl;
+        std::cout << "v1 " << &v1 << std::endl;
+        std::cout << "v2 " << &v2 << std::endl;
 
         try {
             _Enable {
@@ -53,19 +54,19 @@ void testNameServer() {
                 v0.buy( VendingMachine::Flavours::DR_SALT, card )  ;
             }
         } catch ( VendingMachine::Funds f  ) {
-            osacquire(cout) << "no funds" << endl;
+            std::cout << "no funds" << std::endl;
         } catch ( VendingMachine::Stock s ) {
-            osacquire(cout) << "no stock" << endl;
+            std::cout << "no stock" << std::endl;
         }
 
-        osacquire(cout) << card.getBalance() << endl;
+        std::cout << card.getBalance() << std::endl;
         auto list = v0.inventory();
         v0.restocked();
 
 
         for ( int i = 0; i < VendingMachine::Flavours::NUM_TYPES; i += 1 )
-            osacquire(cout) << list[i] << " ";
-        osacquire(cout) << endl;
+            std::cout << list[i] << " ";
+        std::cout << std::endl;
     }
 }
 
