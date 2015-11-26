@@ -1,17 +1,46 @@
+# Soda Makefile
+# Authors: Haseeb Saeed, Mayank Sindwani
+# Date: 2015-11-26
+
+# Build variables
 BUILD=DEBUG
 
+# Compiler Options
 CXX = u++
-CXXFLAGS = -g -Wall -Wno-unused-label -Wfatal-errors -MMD -D"${BUILD}" -O2 -std=c++11
+CXXFLAGS = -g -I"." -Wall -Wno-unused-label -Wfatal-errors -MMD -D"${BUILD}" -O2 -std=c++11
 
-SRC = $(wildcard *.cc)
-OBJECTS = $(SRC:.c=.o)
-DEPENDS = ${OBJECTS}
-EXEC = soda
+# Shared objects
+OBJS =                 \
+	bank.o             \
+	bottlingplant.o    \
+	config.o           \
+	groupoff.o         \
+	nameserver.o       \
+	parent.o           \
+	printer.o          \
+	student.o          \
+	truck.o            \
+	vendingmachine.o   \
+	watcard.o          \
+	watcardoffice.o    \
+
+# Main Source Files
+SODA_OBJS = ${OBJS} main.o
+SODA = soda
+
+# Test Source Files
+TEST_OBJS = ${OBJS} test/driver.o
+TEST = testsoda
 
 .PHONY : clean
 
-${EXEC}: ${OBJECTS}
+# Main Target
+${SODA}: ${SODA_OBJS}
+	${CXX} ${CXXFLAGS} $^ -o $@
+
+# Test Target
+${TEST}: ${TEST_OBJS}
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 clean:
-	rm -f *.d *.o ${EXEC}
+	rm -f *.d *.o test/*.d test/*.o ${SODA} ${TEST}
