@@ -1,7 +1,7 @@
-#include "nameserver.h"
-#include "printer.h"
-#include "vendingmachine.h"
-#include <assert.h>
+#include "nameserver.h"                 // NameServer class
+#include "printer.h"                    // Printer class
+#include "vendingmachine.h"             // VendingMachine class
+#include <assert.h>                     // assert
 
 //-------------------------------------------------------------------
 // Constructor for nameserver task
@@ -57,6 +57,9 @@ VendingMachine** NameServer::getMachineList() {
     return machineList;
 }
 
+//-------------------------------------------------------------------
+// Main function for NameServer task
+//-------------------------------------------------------------------
 void NameServer::main() {
 
     // Indicate we have started
@@ -65,14 +68,13 @@ void NameServer::main() {
     for ( ;; ) {
 
         _Accept( ~NameServer ) {
-    
-            printer.print( Printer::Kind::NameServer, 'F' );
             break;
         } or _When( numRegistered < numVMs ) _Accept( VMregister ) {
 
             numRegistered += 1;
             if ( numRegistered == numVMs ) {
 
+                // Once all machines are registered, assign machines to students
                 for ( unsigned int i = 0; i < numStudents; i += 1 ) {
                     studentMachines[i] = i % numVMs;
                 }
@@ -80,4 +82,7 @@ void NameServer::main() {
         } or _When( numRegistered == numVMs ) _Accept( getMachine, getMachineList ) {
         }
     }
+    
+    // Indicate we have finished
+    printer.print( Printer::Kind::NameServer, 'F' );
 }

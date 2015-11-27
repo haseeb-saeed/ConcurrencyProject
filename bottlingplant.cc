@@ -1,35 +1,43 @@
-#include "bottlingplant.h"
-#include "printer.h"
-#include "nameserver.h"
-#include "vendingmachine.h"
-#include "truck.h"
-#include "MPRNG.h"
-#include <assert.h>
+#include "bottlingplant.h"                  // BottlingPlant class
+#include "printer.h"                        // Printer class
+#include "nameserver.h"                     // NameServer class
+#include "vendingmachine.h"                 // VendingMachine class
+#include "truck.h"                          // Truck class
+#include "MPRNG.h"                          // MPRNG class
+#include <assert.h>                         // assert
 #include <iostream>
 using namespace std;
 
 // External random number generator
 extern MPRNG mprng;
 
+//---------------------------------------------------------------------
+// Constructor for BottlingPlant task
+//---------------------------------------------------------------------
 BottlingPlant::BottlingPlant( Printer &prt, NameServer &nameServer, unsigned int numVendingMachines,
     unsigned int maxShippedPerFlavour, unsigned int maxStockPerFlavour, unsigned int timeBetweenShipments )
-    : printer( prt ), nameServer( nameServer ), numVendingMachines( numVendingMachines ), maxShippedPerFlavour( maxShippedPerFlavour ),
-        maxStockPerFlavour( maxStockPerFlavour ), timeBetweenShipments( timeBetweenShipments ), shutdown( false ) {
+    : printer( prt ), nameServer( nameServer ), numVendingMachines( numVendingMachines ),
+        maxShippedPerFlavour( maxShippedPerFlavour ), maxStockPerFlavour( maxStockPerFlavour ),
+        timeBetweenShipments( timeBetweenShipments ), shutdown( false ) {
 
     // Create a buffer for a shipment
     shipment = new unsigned int [VendingMachine::Flavours::NUM_TYPES];
-
-
-    // For now, crash if memory allocation fails
     assert( shipment != nullptr );
 }
 
+//---------------------------------------------------------------------
+// Destructor for BottlingPlant task
+//---------------------------------------------------------------------
 BottlingPlant::~BottlingPlant() {
 
     // Free allocated memory
      delete [] shipment;
 }
 
+//---------------------------------------------------------------------
+// Places shipment into the given cargo array
+// Throws Shutdown if the plant is closing
+//---------------------------------------------------------------------
 void BottlingPlant::getShipment( unsigned int cargo[] ) {
 
     cout << "GET_SHIPMENT CALLED BITCHES" << endl;
@@ -45,13 +53,18 @@ void BottlingPlant::getShipment( unsigned int cargo[] ) {
     }
 }
 
+//---------------------------------------------------------------------
+// Main function for BottlingPlant task
+//---------------------------------------------------------------------
 void BottlingPlant::main() {
 
     // Indicate we are starting
-    //printer.print( Printer::Kind::BottlingPlant, 'S' );
+    printer.print( Printer::Kind::BottlingPlant, 'S' );
     cout << "plant is starting" << endl;
 
     try {
+    
+        // Create a truck for delivering bottles
         Truck truck( printer, nameServer, *this, numVendingMachines, maxStockPerFlavour );
 
         for ( ;; ) {
@@ -74,14 +87,13 @@ void BottlingPlant::main() {
             // If the destructor is called, indicate we are closing
             _Accept( ~BottlingPlant ) {
 
-               cout << "plant destructor called" << endl;
-               shutdown = true;
+                cout << "plant destructor called" << endl;
+                shutdown = true;
 
-               _Accept (getShipment) {
-
-               }
-
-               break;
+                // Wait until the next getShipment so the truck knows to stop
+                _Accept (getShipment) {
+                    break;
+                }
 
             } or _Accept( getShipment ) {
 

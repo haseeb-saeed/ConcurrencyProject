@@ -1,7 +1,7 @@
-#include "parent.h"
-#include "printer.h"
-#include "MPRNG.h"
-#include "bank.h"
+#include "parent.h"             // Parent class
+#include "printer.h"            // Printer class
+#include "MPRNG.h"              // MPRNG class
+#include "bank.h"               // Bank class
 
 // External mprng
 extern MPRNG mprng;
@@ -27,7 +27,6 @@ void Parent::main() {
         // Check to see if the destructor has been called
         _Accept( ~Parent ) {
 
-            printer.print( Printer::Kind::Parent, 'F' );
             break;
         } _Else {
 
@@ -40,4 +39,7 @@ void Parent::main() {
             bank.deposit( student, amount );
         }
     }
+
+    // Indicate we have finished
+    printer.print( Printer::Kind::Parent, 'F' );
 }

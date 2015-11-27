@@ -11,21 +11,33 @@ using namespace std;
 // External random number generator
 extern MPRNG mprng;
 
+//---------------------------------------------------------------------
+// Constructor for Args struct
+//---------------------------------------------------------------------
 WATCardOffice::Args::Args( unsigned int sid, unsigned int amount, WATCard* card )
     : sid( sid ), amount( amount ), card( card ) {
 
 }
 
+//---------------------------------------------------------------------
+// Constructor for Jobs struct
+//---------------------------------------------------------------------
 WATCardOffice::Job::Job( Args args )
     : args( args ) {
 
 }
 
+//---------------------------------------------------------------------
+// Constructor for Courier task
+//---------------------------------------------------------------------
 WATCardOffice::Courier::Courier( WATCardOffice& office, unsigned int id )
     : office( office ), id( id ) {
 
 }
 
+//---------------------------------------------------------------------
+// Main function for Courier task
+//---------------------------------------------------------------------
 void WATCardOffice::Courier::main() {
 
     // Indicate the courier has started
@@ -35,7 +47,9 @@ void WATCardOffice::Courier::main() {
 
         // Request work
         Job* job = office.requestWork();
-        if ( job == nullptr ) break;
+
+      // Null pointer indicates the office has closed
+      if ( job == nullptr ) break;
 
         // Get the WATCard
         WATCard* card = job->args.card;
@@ -51,7 +65,7 @@ void WATCardOffice::Courier::main() {
         card->deposit( amount );
 
         // Did we lose the WATCard?
-        if ( mprng( 1 ) == 0 ) {
+        if ( mprng( 5 ) == 0 ) {
             delete card;
             job->result.exception( new Lost() );
             cout << "courier " << id << " lost card" << endl;
@@ -69,30 +83,19 @@ void WATCardOffice::Courier::main() {
     office.printer.print( Printer::Kind::Courier, id, 'F' );
 }
 
+
+//---------------------------------------------------------------------
+// Constructor for WATCardOffice task
+//---------------------------------------------------------------------
 WATCardOffice::WATCardOffice( Printer &prt, Bank &bank, unsigned int numCouriers )
     : printer( prt ), bank( bank ), numCouriers( numCouriers ), bench(), jobs(), numWaiting( 0 ) {
 
-    // Create couriers
-    // For now, crash if the allocation fails
-    couriers = new Courier* [numCouriers];
-    assert( couriers != nullptr );
-
-    for ( unsigned int i = 0; i < numCouriers; i += 1 ) {
-        couriers[i] = new Courier( *this, i );
-        assert( couriers[i] != nullptr );
-    }
+    
 }
 
-WATCardOffice::~WATCardOffice() {
-
-    // Free allocated memory
-    for ( unsigned int i = 0; i < numCouriers; i += 1 ) {
-        delete couriers[i];
-    }
-
-    delete [] couriers;
-}
-
+//---------------------------------------------------------------------
+// Creates a new WATCard
+//---------------------------------------------------------------------
 WATCard::FWATCard WATCardOffice::create( unsigned int sid, unsigned int amount ) {
 
     // Add a new job to the list of requests
@@ -107,6 +110,9 @@ WATCard::FWATCard WATCardOffice::create( unsigned int sid, unsigned int amount )
 	return job->result;
 }
 
+//---------------------------------------------------------------------
+// Transfers money onto WATCard
+//---------------------------------------------------------------------
 WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount, WATCard* card ) {
 
 	// Add a new job to the list of requests
@@ -121,6 +127,9 @@ WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount
     return job->result;
 }
 
+//---------------------------------------------------------------------
+// Returns a job for the courier to do (or NULL if the office has closed)
+//---------------------------------------------------------------------
 WATCardOffice::Job* WATCardOffice::requestWork() {
 
     // If there is no work, block
@@ -144,10 +153,21 @@ WATCardOffice::Job* WATCardOffice::requestWork() {
     return job;
 }
 
+//---------------------------------------------------------------------
+// Main function for WATCardOffice task
+//---------------------------------------------------------------------
 void WATCardOffice::main() {
 
     // Indicate the office is starting
-    printer.print( Printer::Kind::WATCardOffice, 'F' );
+    printer.print( Printer::Kind::WATCardOffice, 'S' );
+
+    // Create couriers
+    Courier* couriers [numCouriers];
+
+    for ( unsigned int i = 0; i < numCouriers; i += 1 ) {
+        couriers[i] = new Courier( *this, i );
+        assert( couriers[i] != nullptr );
+    }
 
     for ( ;; ) {
 
@@ -157,10 +177,8 @@ void WATCardOffice::main() {
             // Wake up the blocked couriers
             while ( !bench.empty() ) {
                 bench.signalBlock();
-             }
+            }
 
-            // Indicate the office is closing
-            printer.print( Printer::Kind::WATCardOffice, 'F' );
             break;
 
         } or _Accept( create, transfer ) {
@@ -173,4 +191,12 @@ void WATCardOffice::main() {
 
         }
     }
+
+    // Wait for the couriers to finish
+    for ( unsigned int i = 0; i < numCouriers; i += 1 ) {
+        delete couriers[i];
+    }
+
+    // Indicate the office is closing
+    printer.print( Printer::Kind::WATCardOffice, 'F' );
 }

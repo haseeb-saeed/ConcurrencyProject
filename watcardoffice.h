@@ -1,55 +1,60 @@
-#include "watcard.h"
-#include "printer.h"
-#include "bank.h"
-#include <deque>
+#include "watcard.h"                // WATCard class
+#include "printer.h"                // Printer class
+#include "bank.h"                   // Bank class
+#include <deque>                    // deque class
 
 #ifndef __WATCARDOFFICE_H__
 #define __WATCARDOFFICE_H__
 
+//-----------------------------------------------------------------------
+// Definition for WATCardOffice task
+//-----------------------------------------------------------------------
 _Task WATCardOffice {
 
+    // Arguments for a job
     struct Args {
 
-        unsigned int sid;
-        unsigned int amount;
-        WATCard* card;
+        unsigned int sid;               // Student id
+        unsigned int amount;            // Amount to withdraw
+        WATCard* card;                  // WATCard to deposit to
 
         Args( unsigned int sid, unsigned int amount, WATCard* card );
     };
 
-    struct Job {                           // marshalled arguments and return future
+    // Job for a courier to execute
+    struct Job {                          
 
-        Args args;                         // call arguments
+        Args args;                      // Call arguments
+        WATCard::FWATCard result;       // Future to return
 
-        WATCard::FWATCard result;          // return future
         Job( Args args );
     };
 
+    // Courier worker task
     _Task Courier {
 
-        WATCardOffice& office;
-        const unsigned int id;     
+        WATCardOffice& office;          // Office the courier belongs to
+        const unsigned int id;          // Unique courier id
+
         void main();
 
       public:
         Courier( WATCardOffice& office, unsigned int id );
     };
 
-    Printer& printer;
-    Bank& bank;
-    const unsigned int numCouriers;
-    Courier** couriers;
-    uCondition bench;
-    std::deque<Job*> jobs;
-    unsigned int numWaiting;
+    Printer& printer;                   // Printer to print to
+    Bank& bank;                         // Bank for courier to withdraw from
+    const unsigned int numCouriers;     // Number of couriers
+    uCondition bench;                   // Bench for couriers to wait on for a job
+    std::deque<Job*> jobs;              // Queue for jobs
+    unsigned int numWaiting;            // Number of couriers waitinf for a job
 
     void main();
 
   public:
-    _Event Lost {};                        // lost WATCard
+    _Event Lost {};                     // Lost WATCard
 
     WATCardOffice( Printer &prt, Bank &bank, unsigned int numCouriers );
-    ~WATCardOffice();
 
     WATCard::FWATCard create( unsigned int sid, unsigned int amount );
     WATCard::FWATCard transfer( unsigned int sid, unsigned int amount, WATCard *card );

@@ -1,5 +1,5 @@
-#include "bank.h"
-#include <assert.h>
+#include "bank.h"                       // Bank class
+#include <assert.h>                     // assert
 
 //---------------------------------------------------------------
 // Constructor for Bank class

@@ -1,10 +1,10 @@
-#include "student.h"
-#include "printer.h"
-#include "nameserver.h"
-#include "groupoff.h"
-#include "watcardoffice.h"
-#include "vendingmachine.h"
-#include "MPRNG.h"
+#include "student.h"                        // Student class
+#include "printer.h"                        // Printer class
+#include "nameserver.h"                     // NameServer class
+#include "groupoff.h"                       // Groupoff class
+#include "watcardoffice.h"                  // WATCardOffice class
+#include "vendingmachine.h"                 // VendingMachine class
+#include "MPRNG.h"                          // MPRNG class
 #include <iostream>
 using namespace std;
 
@@ -60,7 +60,7 @@ L1: for ( ;; ) {
 
                      _Select( giftCard ) {
 
-                        // Buy the soda
+                        // Buy the soda using the giftcard
                         cout << "student " << id << " buying with gift card " << endl;
                         machine->buy( favourite, *giftCard() );
                         printer.print( Printer::Kind::Student, id, 'G', giftCard()->getBalance() );
@@ -73,7 +73,7 @@ L1: for ( ;; ) {
 
                     } or _Select( watCard ) {
 
-                        // Buy the soda
+                        // Buy the soda using the watcard
                         cout << "student " << id << " buying with watcard " << endl;
                         machine->buy( favourite, *watCard() );
                         printer.print( Printer::Kind::Student, id, 'B', watCard()->getBalance() );
@@ -110,9 +110,11 @@ L1: for ( ;; ) {
         delete giftCard();
     }
 
+    // Delete the watcard even if it got lost
     try {
         delete watCard();
     } catch ( WATCardOffice::Lost ) {
+        watCard.reset();
     }
 
     // Indicate the student has finished

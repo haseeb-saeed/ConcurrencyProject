@@ -1,10 +1,14 @@
-#include "vendingmachine.h"
-#include "printer.h"
-#include "nameserver.h"
-#include "watcard.h"
+#include "vendingmachine.h"                     // VendingMachine class
+#include "printer.h"                            // Printer class
+#include "nameserver.h"                         // NameServer class
+#include "watcard.h"                            // WATCard class
+#include <assert.h>                             // assert
 #include <iostream>
 using namespace std;
 
+//--------------------------------------------------------------
+// Constructor for VendingMachine task
+//--------------------------------------------------------------
 VendingMachine::VendingMachine( Printer& printer, NameServer& nameServer, unsigned int id,
     unsigned int sodaCost, unsigned int maxStockPerFlavour )
     : printer( printer ), nameServer( nameServer ), id( id ), sodaCost( sodaCost ),
@@ -19,6 +23,9 @@ VendingMachine::VendingMachine( Printer& printer, NameServer& nameServer, unsign
     }
 }
 
+//--------------------------------------------------------------
+// Destructor for VendingMachine task
+//--------------------------------------------------------------
 VendingMachine::~VendingMachine() {
 
     cout << "destructing vending machine " << id << endl;
@@ -27,6 +34,9 @@ VendingMachine::~VendingMachine() {
     delete [] stock;    
 }
 
+//--------------------------------------------------------------
+// Main function for VendingMachine task
+//--------------------------------------------------------------
 void VendingMachine::main() {
 
     // Register with nameserver
@@ -61,6 +71,9 @@ void VendingMachine::main() {
     }
 }
 
+//--------------------------------------------------------------
+// Buys a flavour of soda
+//--------------------------------------------------------------
 void VendingMachine::buy( Flavours flavour, WATCard& card ) {
 
     unsigned int index = flavour;
@@ -80,20 +93,32 @@ void VendingMachine::buy( Flavours flavour, WATCard& card ) {
     printer.print( Printer::Kind::Vending, 'B', index, stock[index] );
 }
 
+//--------------------------------------------------------------
+// Return the inventory for the machine
+//--------------------------------------------------------------
 unsigned int* VendingMachine::inventory() {
 
     return stock;
 }
 
+//--------------------------------------------------------------
+// Indicate that restocking is complete
+//--------------------------------------------------------------
 void VendingMachine::restocked() {
 
 }
 
+//--------------------------------------------------------------
+// Get the cost of a soda
+//--------------------------------------------------------------
 _Nomutex unsigned int VendingMachine::cost() {
 
     return sodaCost;
 }
 
+//--------------------------------------------------------------
+// Get the machine's ID
+//--------------------------------------------------------------
 _Nomutex unsigned int VendingMachine::getId() {
 
     return id;
