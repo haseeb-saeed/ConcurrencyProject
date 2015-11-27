@@ -28,7 +28,8 @@ void Student::main() {
 
     // Choose a favourite and purchase amount
     unsigned int numPurchases = mprng( 1, maxPurchases );
-    VendingMachine::Flavours favourite = static_cast<VendingMachine::Flavours>( mprng( 3 ) );
+    VendingMachine::Flavours favourite =
+        static_cast<VendingMachine::Flavours>( mprng( VendingMachine::Flavours::NUM_TYPES ) );
 
     // Indicate the student has started
     printer.print( Printer::Kind::Student, id, 'S', favourite, numPurchases );

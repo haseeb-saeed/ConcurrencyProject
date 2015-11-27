@@ -1,10 +1,12 @@
 TODO:
-    - Work on truck, plant, printer, group off
-    - Student and watcard office for later
+
+    - Remove pesky cout statements once printer is done
+    - Add in any missing calls to the printer
+    - Randomize groupoff
     - Testdoc ( Leave this unil Sunday 4pm )
 
 Haseeb:
 
 Max:
 
-    - Group off
+    -Printer
