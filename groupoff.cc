@@ -4,11 +4,13 @@
 
 using namespace std;
 
-Groupoff::Groupoff( unsigned int numStudents, unsigned int sodaCost, unsigned int groupoffDelay )
+Groupoff::Groupoff( unsigned int numStudents, unsigned int sodaCost, unsigned int groupoffDelay, Printer& printer )
     : numStudents(numStudents),
       numGiftCards(0),
       sodaCost(sodaCost),
-      groupoffDelay(groupoffDelay) {
+      groupoffDelay(groupoffDelay),
+      printer (printer)
+{
 
     giftCards = new WATCard::FWATCard[numStudents];
 }
@@ -38,6 +40,7 @@ void Groupoff::main() {
 
                 yield( groupoffDelay );
                 card = new WATCard();
+                printer.print(Printer::Kind::Groupoff, 'D' , sodaCost);
                 card->deposit(sodaCost);
 
                 // TODO: Select at random

@@ -84,13 +84,15 @@ void uMain::main() {
     ConfigParms cparms;
     processConfigFile( configFile, cparms );
 
+    uProcessor p[cparms.numCouriers - 1];
+
     // Create objects for soda delivery
     Printer printer( cparms.numStudents, cparms.numVendingMachines, cparms.numCouriers );
     Bank bank( cparms.numStudents );
     Parent parent( printer, bank, cparms.numStudents, cparms.parentalDelay );
     WATCardOffice office( printer, bank, cparms.numCouriers );
     NameServer server( printer, cparms.numVendingMachines, cparms.numStudents );
-    Groupoff groupoff( cparms.numStudents, cparms.sodaCost, cparms.groupoffDelay );
+    Groupoff groupoff( cparms.numStudents, cparms.sodaCost, cparms.groupoffDelay, printer );
 
     // Create vending machines
     VendingMachine* machines [cparms.numVendingMachines];

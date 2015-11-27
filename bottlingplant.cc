@@ -32,9 +32,11 @@ BottlingPlant::~BottlingPlant() {
 
 void BottlingPlant::getShipment( unsigned int cargo[] ) {
 
+    cout << "GET_SHIPMENT CALLED BITCHES" << endl;
+
     // If shutting down, let the truck know
     if ( shutdown ) {
-        throw Shutdown();    
+        throw Shutdown();
     }
 
     // Pass the shipment to the truck
@@ -48,24 +50,24 @@ void BottlingPlant::main() {
     // Indicate we are starting
     //printer.print( Printer::Kind::BottlingPlant, 'S' );
     cout << "plant is starting" << endl;
-    
+
     try {
         Truck truck( printer, nameServer, *this, numVendingMachines, maxStockPerFlavour );
-    
+
         for ( ;; ) {
 
             // Get a coffee from Tom Hortons
             // Because going to Starbuks is for losers ;)
             yield( timeBetweenShipments );
-               
+
             // Create a shipment
             unsigned int total = 0;
 
             for ( unsigned int i = 0; i < VendingMachine::Flavours::NUM_TYPES; i += 1 ) {
                 shipment[i] = mprng( maxShippedPerFlavour );
-                total += shipment[i];     
+                total += shipment[i];
             }
-            
+
             printer.print( Printer::Kind::BottlingPlant, 'G', total );
             cout << "plant created " << total << " bottles" << endl;
 
@@ -74,18 +76,23 @@ void BottlingPlant::main() {
 
                cout << "plant destructor called" << endl;
                shutdown = true;
-               break;   
 
-            } _Accept( getShipment ) {
-                
+               _Accept (getShipment) {
+
+               }
+
+               break;
+
+            } or _Accept( getShipment ) {
+
                 // Indicate the shipment was taken
                 printer.print( Printer::Kind::BottlingPlant, 'P' );
                 cout << "plant - shipment taken" << endl;
-            }   
+            }
         }
-    } catch ( uMutexFailure::RendezvousFailure ) {    
+    } catch ( uMutexFailure::RendezvousFailure ) {
     }
-   
+
     // Indicate we are done
     printer.print( Printer::Kind::BottlingPlant, 'F' );
     cout << "plant is finishing" << endl;

@@ -45,9 +45,9 @@ void Student::main() {
     cout << "student " << id << " machine " << machine->getId() << endl;
 
 L1: for ( ;; ) {
-    
+
       if ( purchase == numPurchases ) break L1;
-        
+
         // Yield before buying
         cout << "student " << id << " yielding" << endl;
         yield( mprng( 1, 10 ) );
@@ -70,7 +70,7 @@ L1: for ( ;; ) {
                         delete giftCard();
                         giftCard.reset();
                         usedGiftCard = true;
-                    
+
                     } or _Select( watCard ) {
 
                         // Buy the soda
@@ -79,16 +79,16 @@ L1: for ( ;; ) {
                         printer.print( Printer::Kind::Student, id, 'B', watCard()->getBalance() );
                         cout << "student " << id << " bought with watcard " << endl;
                     }
-                    
+
                     purchase += 1;
                     break L2;
                 }
             } catch ( WATCardOffice::Lost ) {
                 // Get a new WATCard, but don't yield
+                cout << "student " << id << " lost card" << endl;
                 watCard.reset();
                 watCard = cardOffice.create( id, 5 );
                 printer.print( Printer::Kind::Student, id, 'L' );
-                cout << "student " << id << " lost card" << endl;
             } catch ( VendingMachine::Funds ) {
                 // Add more funds to WATCard
                 watCard = cardOffice.transfer( id, machine->cost() + 5, watCard );
@@ -107,13 +107,13 @@ L1: for ( ;; ) {
 
     // If the giftcard hasn't been used, free its memory
     if ( !usedGiftCard ) {
-        delete giftCard();    
+        delete giftCard();
     }
 
     try {
         delete watCard();
     } catch ( WATCardOffice::Lost ) {
-    }      
+    }
 
     // Indicate the student has finished
     printer.print( Printer::Kind::Student, id, 'F' );
