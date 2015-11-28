@@ -25,10 +25,11 @@ _Monitor Printer {
     };
 
     struct data* buffer;
-    unsigned int bufferSize;
+    unsigned int bufferSize, numStudents, numVendingMachines;
 
-    void _print( Kind kind, unsigned int lid, char state, int value1 = -1, int value2 = -1);
-    unsigned int getKindIndex( Kind kind );
+    void setBuffer( Kind kind, unsigned int lid, char state, int value1 = -1, int value2 = -1);
+    unsigned int getKindIndex( Kind kind , unsigned int offset = 0);
+    void flush(char state);
 };
 
 #endif
