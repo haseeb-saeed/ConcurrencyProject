@@ -19,7 +19,7 @@ VendingMachine::VendingMachine( Printer& printer, NameServer& nameServer, unsign
     stock = new unsigned int [numTypes];
 
     for ( unsigned int i = 0; i < numTypes; i += 1 ) {
-        stock[i] = 1;
+        stock[i] = 0;
     }
 }
 

@@ -84,8 +84,6 @@ void uMain::main() {
     ConfigParms cparms;
     processConfigFile( configFile, cparms );
 
-    uProcessor p[cparms.numCouriers - 1];
-
     // Create objects for soda delivery
     Printer printer( cparms.numStudents, cparms.numVendingMachines, cparms.numCouriers );
     Bank bank( cparms.numStudents );
