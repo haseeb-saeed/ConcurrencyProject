@@ -35,6 +35,9 @@ unsigned int Truck::GetNextMachine() {
 //--------------------------------------------------------------------
 void Truck::main() {
 
+    // Indicate the truck is starting
+    printer.print( Printer::Kind::Truck, 'S' );
+
     // Create a cargo
     unsigned int cargo[VendingMachine::Flavours::NUM_TYPES];
     unsigned int currVM, i, j, stock, quantity;
@@ -55,7 +58,7 @@ void Truck::main() {
 
                 for ( i = 0; i < numVendingMachines; i += 1) {
 
-                    cout << " NEXT MACHINE " << currVM << endl;
+                    //cout << " NEXT MACHINE " << currVM << endl;
 
                     // Indicate we are stocking the machine
                     inventory = machines[currVM]->inventory();
@@ -82,4 +85,6 @@ void Truck::main() {
         }
     } catch(BottlingPlant::Shutdown) {
     }
+
+    printer.print( Printer::Kind::Truck, 'F' );
 }

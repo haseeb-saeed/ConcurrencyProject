@@ -28,7 +28,7 @@ VendingMachine::VendingMachine( Printer& printer, NameServer& nameServer, unsign
 //--------------------------------------------------------------
 VendingMachine::~VendingMachine() {
 
-    cout << "destructing vending machine " << id << endl;
+    //cout << "destructing vending machine " << id << endl;
 
     // Free resources
     delete [] stock;    
@@ -40,7 +40,7 @@ VendingMachine::~VendingMachine() {
 void VendingMachine::main() {
 
     // Register with nameserver
-    printer.print( Printer::Kind::Vending, 'S', sodaCost );
+    printer.print( Printer::Kind::Vending, id, 'S', sodaCost );
     nameServer.VMregister( this ); 
 
     for ( ;; ) {
@@ -50,25 +50,24 @@ void VendingMachine::main() {
             _Enable { 
 
                _Accept( ~VendingMachine ) {
-                        
-                    printer.print( Printer::Kind::Vending, 'F' );
                     break;    
                 } or _Accept( buy ) {
-                
                 } or _Accept( inventory ) {
                    
-                    printer.print( Printer::Kind::Vending, 'r' );
+                    printer.print( Printer::Kind::Vending, id, 'r' );
                    
                     // Wait until restocking is finished 
                     _Accept( restocked ) {
-                        printer.print( Printer::Kind::Vending, 'R' );
+                        printer.print( Printer::Kind::Vending, id, 'R' );
                     } 
                 } 
             }
         } catch ( uMutexFailure::RendezvousFailure ) {
-            
         }
     }
+    
+    // Indicate we have finished         
+    printer.print( Printer::Kind::Vending, id, 'F' );
 }
 
 //--------------------------------------------------------------
@@ -90,7 +89,7 @@ void VendingMachine::buy( Flavours flavour, WATCard& card ) {
     // Make transaction
     stock[index] -= 1;
     card.withdraw( sodaCost );
-    printer.print( Printer::Kind::Vending, 'B', index, stock[index] );
+    printer.print( Printer::Kind::Vending, id, 'B', index, stock[index] );
 }
 
 //--------------------------------------------------------------

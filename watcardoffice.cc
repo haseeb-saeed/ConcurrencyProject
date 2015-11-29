@@ -68,10 +68,10 @@ void WATCardOffice::Courier::main() {
         if ( mprng( 5 ) == 0 ) {
             delete card;
             job->result.exception( new Lost() );
-            cout << "courier " << id << " lost card" << endl;
+            //cout << "courier " << id << " lost card" << endl;
         } else {
             // Store the card into the future
-            cout << "courier " << id << " delivering card" << endl;
+            //cout << "courier " << id << " delivering card" << endl;
             job->result.delivery( card );
         }
 

@@ -40,7 +40,7 @@ BottlingPlant::~BottlingPlant() {
 //---------------------------------------------------------------------
 void BottlingPlant::getShipment( unsigned int cargo[] ) {
 
-    cout << "GET_SHIPMENT CALLED BITCHES" << endl;
+    //cout << "GET_SHIPMENT CALLED BITCHES" << endl;
 
     // If shutting down, let the truck know
     if ( shutdown ) {
@@ -60,7 +60,7 @@ void BottlingPlant::main() {
 
     // Indicate we are starting
     printer.print( Printer::Kind::BottlingPlant, 'S' );
-    cout << "plant is starting" << endl;
+    //cout << "plant is starting" << endl;
 
     try {
     
@@ -82,12 +82,12 @@ void BottlingPlant::main() {
             }
 
             printer.print( Printer::Kind::BottlingPlant, 'G', total );
-            cout << "plant created " << total << " bottles" << endl;
+            //cout << "plant created " << total << " bottles" << endl;
 
             // If the destructor is called, indicate we are closing
             _Accept( ~BottlingPlant ) {
 
-                cout << "plant destructor called" << endl;
+                //cout << "plant destructor called" << endl;
                 shutdown = true;
 
                 // Wait until the next getShipment so the truck knows to stop
@@ -99,7 +99,7 @@ void BottlingPlant::main() {
 
                 // Indicate the shipment was taken
                 printer.print( Printer::Kind::BottlingPlant, 'P' );
-                cout << "plant - shipment taken" << endl;
+                //cout << "plant - shipment taken" << endl;
             }
         }
     } catch ( uMutexFailure::RendezvousFailure ) {
@@ -107,5 +107,5 @@ void BottlingPlant::main() {
 
     // Indicate we are done
     printer.print( Printer::Kind::BottlingPlant, 'F' );
-    cout << "plant is finishing" << endl;
+    //cout << "plant is finishing" << endl;
 }
