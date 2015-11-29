@@ -153,6 +153,8 @@ void Printer::setBuffer( Kind kind, unsigned int lid, char state, int value1, in
     unsigned int i;
 
     if (state == 'F') {
+        flush(state);
+
         // Print out a finished row.
         for (i = 0; i < bufferSize; i++) {
             if (i == lid) {
