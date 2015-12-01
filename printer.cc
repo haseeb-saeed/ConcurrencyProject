@@ -74,6 +74,10 @@ Printer::Printer( unsigned int numStudents, unsigned int numVendingMachines, uns
 // Destructor for printer
 //-------------------------------------------------------------------
 Printer::~Printer() {
+    // Finish printing.
+    flush();
+    cout << "***********************" << endl;
+
     // Delete the buffer.
     delete[] buffer;
 }
@@ -81,12 +85,21 @@ Printer::~Printer() {
 //-------------------------------------------------------------------
 // Flushes the current buffer.
 //-------------------------------------------------------------------
-void Printer::flush(char state) {
+void Printer::flush() {
     struct data column;
-    unsigned int i;
+    int i, maxCol;
 
-    // Process each column.
-    for (i = 0; i < bufferSize; i++) {
+    maxCol = -1;
+
+    // Find the largest index where the data is active.
+    for (i = 0; i < (int)bufferSize; i++) {
+        if (buffer[i].active) {
+            maxCol = i;
+        }
+    }
+
+    // Process the necessary number of columns.
+    for (i = 0; i <= maxCol; i++) {
         column = buffer[i];
 
         // Check to see if there is content to write.
@@ -108,7 +121,10 @@ void Printer::flush(char state) {
         buffer[i].active = false;
     }
 
-    cout << endl;
+    // If anything was printed, add a new line.
+    if (maxCol != -1) {
+        cout << endl;
+    }
 }
 
 //-------------------------------------------------------------------
@@ -153,7 +169,7 @@ void Printer::setBuffer( Kind kind, unsigned int lid, char state, int value1, in
     unsigned int i;
 
     if (state == 'F') {
-        flush(state);
+        flush();
 
         // Print out a finished row.
         for (i = 0; i < bufferSize; i++) {
@@ -168,7 +184,7 @@ void Printer::setBuffer( Kind kind, unsigned int lid, char state, int value1, in
     } else {
         // Flush the buffer if the column is active.
         if (buffer[lid].active) {
-    	   flush(state);
+    	   flush();
         }
 
         // Update the column.
