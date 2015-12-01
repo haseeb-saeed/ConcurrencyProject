@@ -35,18 +35,6 @@ void usage( const char* prog ) {
 }
 
 //-------------------------------------------------------------------------
-// Output a memory allocation failure  message to cerr and terminate
-//-------------------------------------------------------------------------
-void alloc_fail() {
-
-    // Print error message
-    cerr << "Memory allocation failed! Aborting." << endl;
-
-     // Terminate with a failure exit code
-    exit( EXIT_FAILURE );
-}
-
-//-------------------------------------------------------------------------
 // Entry point for program
 //-------------------------------------------------------------------------
 void uMain::main() {
@@ -89,8 +77,8 @@ void uMain::main() {
     Bank bank( cparms.numStudents );
     Parent parent( printer, bank, cparms.numStudents, cparms.parentalDelay );
     WATCardOffice office( printer, bank, cparms.numCouriers );
-    NameServer server( printer, cparms.numVendingMachines, cparms.numStudents );
     Groupoff groupoff( cparms.numStudents, cparms.sodaCost, cparms.groupoffDelay, printer );
+    NameServer server( printer, cparms.numVendingMachines, cparms.numStudents );
 
     // Create vending machines
     VendingMachine* machines [cparms.numVendingMachines];
