@@ -1,9 +1,14 @@
 #include "groupoff.h"           // Groupoff class
 #include "watcard.h"            // WATCard class
+#include "MPRNG.h"              // MPRNG class
 #include <assert.h>             // assert
+
 #include <iostream>
 
 using namespace std;
+
+// External random number generator
+extern MPRNG mprng;
 
 //------------------------------------------------------------------
 // Constructor for Groupoff
@@ -39,7 +44,7 @@ WATCard::FWATCard Groupoff::giftCard() {
 void Groupoff::main() {
  
     WATCard::FWATCard fcard;
-    unsigned int numDelivered = 0;
+    unsigned int numUndelivered = numStudents;
     WATCard* card;
 
     // Indicate we have started
@@ -54,7 +59,7 @@ void Groupoff::main() {
         } _Else {
 
             // If all students have taken a giftcard future, randomly deliver one
-            if ( numStudents == numGiftCards ) {
+            if ( numGiftCards == numStudents ) {
 
                 // Yield before delivery
                 yield( groupoffDelay );
@@ -66,12 +71,16 @@ void Groupoff::main() {
                 printer.print( Printer::Kind::Groupoff, 'D' , sodaCost );
                 card->deposit( sodaCost );
 
-                // TODO: Select at random
                 // Delivery a randomly selected card
-                giftCards[numDelivered++].delivery( card );
+                numUndelivered -= 1;
+                unsigned int index = mprng( numUndelivered );
+                giftCards[index].delivery( card );
+                
+                // Move delivered gift card to back of list
+                std::swap( giftCards[index], giftCards[numUndelivered] );
 
                 // If all cards have been delivered, break out of the loop
-                if ( numDelivered == numStudents ) {
+                if ( numUndelivered == 0 ) {
                     break;
                 }
             }
