@@ -64,7 +64,7 @@ Printer::Printer( unsigned int numStudents, unsigned int numVendingMachines, uns
     // Print separators.
     for (i = 0; i < bufferSize; i++) {
         buffer[i].active = false;
-        cout << "*****\t";
+        cout << "*******\t";
     }
 
     cout << endl;

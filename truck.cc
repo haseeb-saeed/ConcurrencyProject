@@ -40,20 +40,29 @@ void Truck::main() {
 
     // Create a cargo
     unsigned int cargo[VendingMachine::Flavours::NUM_TYPES];
-    unsigned int currVM, i, j, stock, quantity;
+    unsigned int currVM, i, j, stock, quantity, total;
     VendingMachine** machines;
     unsigned int* inventory;
 
     machines = nameServer.getMachineList();
+    const unsigned int numFlavours = VendingMachine::Flavours::NUM_TYPES; 
+    const unsigned int maxBottles = maxStockPerFlavour * numFlavours;
 
     try {
         _Enable {
             for ( ;; ) {
 
-                // Yield before stoking a machine
+                // Yield before stocking a machine
                 yield(mprng(1, 10));
                 plant.getShipment(cargo);
 
+                // Get the total cargo
+                stock = 0;
+                for ( i = 0; i < numFlavours; i += 1 ) {
+                    stock += cargo[i];
+                }
+
+                printer.print( Printer::Kind::Truck, 'P', stock );
                 currVM = GetNextMachine();
 
                 for ( i = 0; i < numVendingMachines; i += 1) {
@@ -62,20 +71,28 @@ void Truck::main() {
 
                     // Indicate we are stocking the machine
                     inventory = machines[currVM]->inventory();
-                    stock = 0;
+                    printer.print( Printer::Kind::Truck, 'd', machines[currVM]->getId(), stock );
+                    total = 0;
 
                     for (j = 0; j < VendingMachine::Flavours::NUM_TYPES; j += 1) {
 
                         quantity = std::min(maxStockPerFlavour - inventory[j], cargo[j]);
 
                         inventory[j] += quantity;
-                        cargo[j] -= quantity;
+                        total += inventory[j];
 
-                        stock += cargo[j];
+                        cargo[j] -= quantity;
+                        stock -= quantity;
+                    }
+
+                    // Was the machine fully restocked?
+                    if ( total != maxBottles ) {
+                        printer.print( Printer::Kind::Truck, 'U', machines[currVM]->getId(), ( maxBottles - total ) );
                     }
 
                     // Indicate the machine was restocked
                     machines[currVM]->restocked();
+                    printer.print( Printer::Kind::Truck, 'D', machines[currVM]->getId(), stock );
 
                   // If all stock is depleted, we are done  
                   if (stock == 0) break;
