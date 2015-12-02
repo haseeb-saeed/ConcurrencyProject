@@ -7,12 +7,20 @@
 using namespace std;
 
 //--------------------------------------------------------------
+// Constructor for PurchaseInfo struct task
+//--------------------------------------------------------------
+VendingMachine::PurchaseInfo::PurchaseInfo( Flavours flavour, WATCard& card )
+    : flavour( flavour ), card( card ) {
+    
+}
+
+//--------------------------------------------------------------
 // Constructor for VendingMachine task
 //--------------------------------------------------------------
 VendingMachine::VendingMachine( Printer& printer, NameServer& nameServer, unsigned int id,
     unsigned int sodaCost, unsigned int maxStockPerFlavour )
     : printer( printer ), nameServer( nameServer ), id( id ), sodaCost( sodaCost ),
-        maxStockPerFlavour( maxStockPerFlavour ) {
+        maxStockPerFlavour( maxStockPerFlavour ), error( Errors::NONE ), bench() {
 
     // Initially no stock
     unsigned int numTypes = Flavours::NUM_TYPES;
@@ -27,8 +35,6 @@ VendingMachine::VendingMachine( Printer& printer, NameServer& nameServer, unsign
 // Destructor for VendingMachine task
 //--------------------------------------------------------------
 VendingMachine::~VendingMachine() {
-
-    //cout << "destructing vending machine " << id << endl;
 
     // Free resources
     delete [] stock;    
@@ -52,6 +58,28 @@ void VendingMachine::main() {
                _Accept( ~VendingMachine ) {
                     break;    
                 } or _Accept( buy ) {
+
+                    if ( !bench.empty() ) {
+                        
+                        // Get purchase info
+                        PurchaseInfo* info = reinterpret_cast<PurchaseInfo*>( bench.front() );    
+                        unsigned int index = info->flavour;
+                       
+                        if ( info->card.getBalance() < sodaCost ) {
+                            error = Errors::FUNDS;    
+                        } else if ( stock[index] == 0 ) {
+                            error = Errors::STOCK;    
+                        } else {
+                            // Make transaction
+                            stock[index] -= 1;
+                            info->card.withdraw( sodaCost );
+                            printer.print( Printer::Kind::Vending, id, 'B', index, stock[index] );
+                            error = Errors::NONE;
+                        }
+                        
+                        // Wake up client
+                        bench.signalBlock();
+                    }
                 } or _Accept( inventory ) {
                    
                     printer.print( Printer::Kind::Vending, id, 'r' );
@@ -63,6 +91,8 @@ void VendingMachine::main() {
                 } 
             }
         } catch ( uMutexFailure::RendezvousFailure ) {
+            // Turn off the error
+            error = Errors::NONE;
         }
     }
     
@@ -75,21 +105,17 @@ void VendingMachine::main() {
 //--------------------------------------------------------------
 void VendingMachine::buy( Flavours flavour, WATCard& card ) {
 
-    unsigned int index = flavour;
-    unsigned int balance = card.getBalance();
+    // Wait on bench to make purchase
+    PurchaseInfo info( flavour, card );
+    bench.wait( reinterpret_cast<uintptr_t>( &info ) );
        
-    if ( sodaCost > balance ) {
+    if ( error == Errors::FUNDS ) {
         // Not enough money for purchase
         _Throw Funds(); 
-    } else if ( stock[index] == 0 ) {
+    } else if ( error == Errors::STOCK ) {
         // Flavour is sold out
         _Throw Stock();    
     } 
-
-    // Make transaction
-    stock[index] -= 1;
-    card.withdraw( sodaCost );
-    printer.print( Printer::Kind::Vending, id, 'B', index, stock[index] );
 }
 
 //--------------------------------------------------------------

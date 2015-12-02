@@ -10,12 +10,16 @@
 //---------------------------------------------------------
 _Task VendingMachine {
 
+    enum Errors { FUNDS, STOCK, NONE };         // Errors to throw during purchase
+
     Printer& printer;                           // Printer to print to
     NameServer& nameServer;                     // NameServer to register with
     const unsigned int id;                      // Unique machine id
     const unsigned int sodaCost;                // Cost of one soda bottle
     const unsigned int maxStockPerFlavour;      // The maximum stock per flavour
     unsigned int* stock;                        // The amount of each flavour
+    Errors error;                               // Error thrown during purchase
+    uCondition bench;                           // Bench for client to wait on
 
     void main();
 
@@ -34,6 +38,16 @@ _Task VendingMachine {
     void restocked();
     _Nomutex unsigned int cost();
     _Nomutex unsigned int getId();
+
+  private:
+    // Contains information about a purchase
+    struct PurchaseInfo {
+        
+        Flavours flavour;                       // Flavour to buy
+        WATCard& card;                          // WATCard of student
+        
+        PurchaseInfo( Flavours flavour, WATCard& card );    
+    };
 };
 
 #endif

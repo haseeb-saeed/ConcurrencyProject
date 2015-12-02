@@ -19,6 +19,7 @@ _Task BottlingPlant {
     const unsigned int maxStockPerFlavour;          // Maximum amount of each flavour in vending machine
     const unsigned int timeBetweenShipments;        // Delay time between shipments
     unsigned int* shipment;                         // Stores a newly created shipment
+    uCondition bench;                               // Bench for truck to sit on
     bool shutdown;                                  // Whether the plant is closing
 
     void main();

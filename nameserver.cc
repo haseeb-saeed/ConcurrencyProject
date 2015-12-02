@@ -7,7 +7,7 @@
 // Constructor for nameserver task
 //-------------------------------------------------------------------
 NameServer::NameServer( Printer& prt, unsigned int numVendingMachines, unsigned int numStudents )
-    : printer( prt ), numVMs( numVendingMachines ), numStudents( numStudents ), numRegistered( 0 ) {
+    : printer( prt ), numVMs( numVendingMachines ), numStudents( numStudents ), numRegistered( 0 ), client( 0 ) {
 
     // Create lists
     machineList = new VendingMachine* [numVMs];
@@ -30,10 +30,10 @@ NameServer::~NameServer() {
 //-------------------------------------------------------------------
 // Registers a vending machine with the nameserver
 //-------------------------------------------------------------------
-void NameServer::VMregister( VendingMachine* vendingmachine ) {
+void NameServer::VMregister( VendingMachine* machine ) {
 
-    machineList[vendingmachine->getId()] = vendingmachine;
-    printer.print( Printer::Kind::NameServer, 'R', vendingmachine->getId() );
+    client = machine->getId();
+    machineList[client] = machine;
 }
 
 //-------------------------------------------------------------------
@@ -41,11 +41,9 @@ void NameServer::VMregister( VendingMachine* vendingmachine ) {
 //-------------------------------------------------------------------
 VendingMachine* NameServer::getMachine( unsigned int id ) {
 
-    unsigned int index = studentMachines[id];
-    studentMachines[id] = ( index + 1 ) % numVMs;
+    client = id;
+    VendingMachine* result = machineList[studentMachines[id]];
 
-    VendingMachine* result = machineList[index];
-    printer.print( Printer::Kind::NameServer, 'N', id, result->getId() );
     return result;
 }
 
@@ -71,6 +69,9 @@ void NameServer::main() {
             break;
         } or _When( numRegistered < numVMs ) _Accept( VMregister ) {
 
+            // Indicate the machine registered
+            printer.print( Printer::Kind::NameServer, 'R', client );
+            
             numRegistered += 1;
             if ( numRegistered == numVMs ) {
 
@@ -79,7 +80,14 @@ void NameServer::main() {
                     studentMachines[i] = i % numVMs;
                 }
             }
-        } or _When( numRegistered == numVMs ) _Accept( getMachine, getMachineList ) {
+        } or _When( numRegistered == numVMs ) _Accept( getMachine ) {
+            
+            // Cycle to nect machine
+            unsigned int& index = studentMachines[client];
+            printer.print( Printer::Kind::NameServer, 'N', client, machineList[index]->getId() );
+            index = ( index + 1 ) % numVMs;
+
+        } or _When( numRegistered == numVMs ) _Accept ( getMachineList ) {
         }
     }
     

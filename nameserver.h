@@ -17,6 +17,7 @@ _Task NameServer {
     VendingMachine** machineList;           // List of vending machines
     unsigned int* studentMachines;          // Machines assigned to each student
     unsigned int numRegistered;             // Number of registerd machines
+    unsigned int client;                    // Communication variable to store id of client
 
     void main();
 

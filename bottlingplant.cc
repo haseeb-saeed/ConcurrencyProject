@@ -18,7 +18,7 @@ BottlingPlant::BottlingPlant( Printer &prt, NameServer &nameServer, unsigned int
     unsigned int maxShippedPerFlavour, unsigned int maxStockPerFlavour, unsigned int timeBetweenShipments )
     : printer( prt ), nameServer( nameServer ), numVendingMachines( numVendingMachines ),
         maxShippedPerFlavour( maxShippedPerFlavour ), maxStockPerFlavour( maxStockPerFlavour ),
-        timeBetweenShipments( timeBetweenShipments ), shutdown( false ) {
+        timeBetweenShipments( timeBetweenShipments ), bench(), shutdown( false ) {
 
     // Create a buffer for a shipment
     shipment = new unsigned int [VendingMachine::Flavours::NUM_TYPES];
@@ -40,17 +40,13 @@ BottlingPlant::~BottlingPlant() {
 //---------------------------------------------------------------------
 void BottlingPlant::getShipment( unsigned int cargo[] ) {
 
-    //cout << "GET_SHIPMENT CALLED BITCHES" << endl;
-
     // If shutting down, let the truck know
     if ( shutdown ) {
         throw Shutdown();
     }
-
-    // Pass the shipment to the truck
-    for ( unsigned int i = 0; i < VendingMachine::Flavours::NUM_TYPES; i += 1 ) {
-        cargo[i] = shipment[i];
-    }
+     
+    // Block until shipment is copied over
+    bench.wait( reinterpret_cast<uintptr_t>( cargo ) );
 }
 
 //---------------------------------------------------------------------
@@ -97,9 +93,20 @@ void BottlingPlant::main() {
 
             } or _Accept( getShipment ) {
 
-                // Indicate the shipment was taken
-                printer.print( Printer::Kind::BottlingPlant, 'P' );
-                //cout << "plant - shipment taken" << endl;
+                if ( !bench.empty() ) {
+                    
+                    // Get the cargo array
+                    unsigned int* cargo = reinterpret_cast<unsigned int*>( bench.front() );
+                
+                    // Copy the shipment
+                    for ( unsigned int i = 0; i < VendingMachine::Flavours::NUM_TYPES; i += 1 ) {
+                        cargo[i] = shipment[i];
+                    }
+
+                    // Unblock truck and indicate the shipment was taken
+                    bench.signalBlock();
+                    printer.print( Printer::Kind::BottlingPlant, 'P' );
+                }
             }
         }
     } catch ( uMutexFailure::RendezvousFailure ) {
