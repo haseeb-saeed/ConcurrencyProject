@@ -5,9 +5,10 @@
 # Compiler Options
 CXX = u++
 CXXFLAGS = -g -I"." -Wall -Wno-unused-label -Wfatal-errors -MMD -O2 -std=c++11
+MAKEFILE_NAME = ${firstword ${MAKEFILE_LIST}}
 
-# Shared objects
-OBJS =                 \
+# Main Source Files
+OBJECTS =              \
 	bank.o             \
 	bottlingplant.o    \
 	config.o           \
@@ -20,24 +21,24 @@ OBJS =                 \
 	vendingmachine.o   \
 	watcard.o          \
 	watcardoffice.o    \
+	main.o             \
 
-# Main Source Files
-SODA_OBJS = ${OBJS} main.o
-SODA = soda
+EXEC = soda
+DEPENDS = ${OBJECTS:.o=.d}
 
-# Test Source Files
-TEST_OBJS = ${OBJS} test/driver.o
-TEST = testsoda
+#############################################################
 
-.PHONY : clean
+.PHONY : all clean
 
-# Main Target
-${SODA}: ${SODA_OBJS}
+${EXEC} : ${OBJECTS}
 	${CXX} ${CXXFLAGS} $^ -o $@
 
-# Test Target
-${TEST}: ${TEST_OBJS}
-	${CXX} ${CXXFLAGS} $^ -o $@
 
-clean:
-	rm -f *.d *.o test/*.d test/*.o ${SODA} ${TEST}
+#############################################################
+
+${OBJECTS} : ${MAKEFILE_NAME}           # OPTIONAL : changes to this file => recompile
+
+-include ${DEPENDS}                     # include *.d files containing program dependences
+
+clean :                                 # remove files that can be regenerated
+	rm -f *.d *.o ${EXEC}
