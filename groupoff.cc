@@ -13,8 +13,8 @@ extern MPRNG mprng;
 //------------------------------------------------------------------
 // Constructor for Groupoff
 //------------------------------------------------------------------
-Groupoff::Groupoff( unsigned int numStudents, unsigned int sodaCost, unsigned int groupoffDelay, Printer& printer )
-    : numStudents( numStudents ), numGiftCards( 0 ), sodaCost( sodaCost ), groupoffDelay( groupoffDelay ),  printer (printer) {
+Groupoff::Groupoff( Printer &prt, unsigned int numStudents, unsigned int sodaCost, unsigned int groupoffDelay )
+    : printer (prt), numStudents( numStudents ), numGiftCards( 0 ), sodaCost( sodaCost ), groupoffDelay( groupoffDelay ) {
 
     // Create an array of futures
     giftCards = new WATCard::FWATCard[numStudents];
@@ -34,7 +34,7 @@ Groupoff::~Groupoff() {
 // Returns a future giftcard
 //------------------------------------------------------------------
 WATCard::FWATCard Groupoff::giftCard() {
- 
+
     return giftCards[numGiftCards++];
 }
 
@@ -42,7 +42,7 @@ WATCard::FWATCard Groupoff::giftCard() {
 // Main function for groupoff task
 //------------------------------------------------------------------
 void Groupoff::main() {
- 
+
     WATCard::FWATCard fcard;
     unsigned int numUndelivered = numStudents;
     WATCard* card;
@@ -64,7 +64,7 @@ void Groupoff::main() {
                 // Yield before delivery
                 yield( groupoffDelay );
 
-                // Create a new gift card 
+                // Create a new gift card
                 card = new WATCard();
                 assert( card != nullptr );
 
@@ -75,7 +75,7 @@ void Groupoff::main() {
                 numUndelivered -= 1;
                 unsigned int index = mprng( numUndelivered );
                 giftCards[index].delivery( card );
-                
+
                 // Move delivered gift card to back of list
                 std::swap( giftCards[index], giftCards[numUndelivered] );
 
