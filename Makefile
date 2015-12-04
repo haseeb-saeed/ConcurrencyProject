@@ -2,12 +2,9 @@
 # Authors: Haseeb Saeed, Mayank Sindwani
 # Date: 2015-11-26
 
-# Build variables
-BUILD=NODEBUG
-
 # Compiler Options
 CXX = u++
-CXXFLAGS = -g -I"." -Wall -Wno-unused-label -Wfatal-errors -MMD -D"${BUILD}" -O2 -std=c++11
+CXXFLAGS = -g -I"." -Wall -Wno-unused-label -Wfatal-errors -MMD -O2 -std=c++11
 
 # Shared objects
 OBJS =                 \
