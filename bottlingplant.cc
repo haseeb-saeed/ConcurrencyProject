@@ -56,7 +56,6 @@ void BottlingPlant::main() {
 
     // Indicate we are starting
     printer.print( Printer::Kind::BottlingPlant, 'S' );
-    //cout << "plant is starting" << endl;
 
     try {
     
@@ -78,12 +77,10 @@ void BottlingPlant::main() {
             }
 
             printer.print( Printer::Kind::BottlingPlant, 'G', total );
-            //cout << "plant created " << total << " bottles" << endl;
 
             // If the destructor is called, indicate we are closing
             _Accept( ~BottlingPlant ) {
 
-                //cout << "plant destructor called" << endl;
                 shutdown = true;
 
                 // Wait until the next getShipment so the truck knows to stop
@@ -114,5 +111,4 @@ void BottlingPlant::main() {
 
     // Indicate we are done
     printer.print( Printer::Kind::BottlingPlant, 'F' );
-    //cout << "plant is finishing" << endl;
 }

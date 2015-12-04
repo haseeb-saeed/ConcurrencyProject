@@ -67,13 +67,12 @@ void Truck::main() {
 
                 for ( i = 0; i < numVendingMachines; i += 1) {
 
-                    //cout << " NEXT MACHINE " << currVM << endl;
-
                     // Indicate we are stocking the machine
                     inventory = machines[currVM]->inventory();
                     printer.print( Printer::Kind::Truck, 'd', machines[currVM]->getId(), stock );
                     total = 0;
 
+                    // Restock the machine
                     for (j = 0; j < VendingMachine::Flavours::NUM_TYPES; j += 1) {
 
                         quantity = std::min(maxStockPerFlavour - inventory[j], cargo[j]);
