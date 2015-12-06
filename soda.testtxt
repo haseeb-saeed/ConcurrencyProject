@@ -494,14 +494,15 @@ ALGORITHM TESTING
     - All expected tasks start and finish
     - Stress cases do not cause crashes/deadlocks
     - Parent starts, deposit gifts, and finishes. Gifts amount to bottle prices and so students can make purchases.
-    - Groupoff behaves similar to parent. The case where a student buys one soda using the gift card is handled.
+    - Groupoff behaves similar to parent. The case where a student buys one soda using the gift card is handled. Gift cards are assigned to all students only once.
     - WATard office starts, requests for work, creates and tranfers calls, and finishes.
     - Nameserver starts, handles machine registration for all machines, and finishes.
-    - Truck starts, picks up shipments, delivers to vending machines, states delivery state, and finishes. Delivery is cyclic as desired.
+    - Truck starts, picks up shipments, delivers to vending machines, states delivery state, and finishes. Delivery is cyclic as desired. Truck picks up the same number of bottles the factory produces.
     - Bottling plant generates and states when a shipment is picked up and finishes.
     - Students purchase soda with groupoff as preference, followed by WATCard. WATCards are lost and restored as desired. Students purchase from assigned vending machines. Students also finish.
     - Vending machines state when reloading begins and finishes. Vending machines also report purchases made and finish.
     - Couriers start and complete tranfers as desired. Couriers also finish.
+    - No memory leaks
 
   TEST 2:
 
