@@ -3,9 +3,6 @@
 #include "nameserver.h"                 // NameServer class
 #include "bottlingplant.h"              // BottlingPlant class
 #include "MPRNG.h"                      // MPRNG class
-#include <iostream>
-
-using namespace std;
 
 // External random number generator
 extern MPRNG mprng;
@@ -15,7 +12,7 @@ extern MPRNG mprng;
 //--------------------------------------------------------------------
 Truck::Truck( Printer &prt, NameServer &nameServer, BottlingPlant &plant, unsigned int numVendingMachines,
     unsigned int maxStockPerFlavour )
-    : printer( prt ), nameServer( nameServer ), plant( plant ), nextVM(0), numVendingMachines( numVendingMachines ),
+    : printer( prt ), nameServer( nameServer ), plant( plant ), nextVM( 0 ), numVendingMachines( numVendingMachines ),
         maxStockPerFlavour( maxStockPerFlavour ) {
 
 }
@@ -26,7 +23,7 @@ Truck::Truck( Printer &prt, NameServer &nameServer, BottlingPlant &plant, unsign
 unsigned int Truck::GetNextMachine() {
 
     unsigned int index = nextVM;
-    nextVM = (nextVM + 1) % numVendingMachines;
+    nextVM = ( nextVM + 1 ) % numVendingMachines;
     return index;
 }
 
@@ -53,8 +50,8 @@ void Truck::main() {
             for ( ;; ) {
 
                 // Yield before stocking a machine
-                yield(mprng(1, 10));
-                plant.getShipment(cargo);
+                yield( mprng( 1, 10 ) );
+                plant.getShipment( cargo );
 
                 // Get the total cargo
                 stock = 0;
@@ -94,12 +91,12 @@ void Truck::main() {
                     printer.print( Printer::Kind::Truck, 'D', machines[currVM]->getId(), stock );
 
                   // If all stock is depleted, we are done  
-                  if (stock == 0) break;
+                  if ( stock == 0 ) break;
                     currVM = GetNextMachine();
                 }
             }
         }
-    } catch(BottlingPlant::Shutdown) {
+    } catch( BottlingPlant::Shutdown ) {
     }
 
     printer.print( Printer::Kind::Truck, 'F' );

@@ -3,8 +3,6 @@
 #include "nameserver.h"                         // NameServer class
 #include "watcard.h"                            // WATCard class
 #include <assert.h>                             // assert
-#include <iostream>
-using namespace std;
 
 //--------------------------------------------------------------
 // Constructor for PurchaseInfo struct task

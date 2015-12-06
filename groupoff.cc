@@ -3,10 +3,6 @@
 #include "MPRNG.h"              // MPRNG class
 #include <assert.h>             // assert
 
-#include <iostream>
-
-using namespace std;
-
 // External random number generator
 extern MPRNG mprng;
 
@@ -35,7 +31,7 @@ Groupoff::~Groupoff() {
 //------------------------------------------------------------------
 WATCard::FWATCard Groupoff::giftCard() {
 
-    return giftCards[numGiftCards++];
+    return giftCards[numGiftCards];
 }
 
 //------------------------------------------------------------------
@@ -55,7 +51,7 @@ void Groupoff::main() {
         _Accept ( ~Groupoff ) {
             break;
         } or _When ( numGiftCards < numStudents ) _Accept( giftCard ) {
-
+            numGiftCards += 1;
         } _Else {
 
             // If all students have taken a giftcard future, randomly deliver one
@@ -80,9 +76,7 @@ void Groupoff::main() {
                 std::swap( giftCards[index], giftCards[numUndelivered] );
 
                 // If all cards have been delivered, break out of the loop
-                if ( numUndelivered == 0 ) {
-                    break;
-                }
+              if ( numUndelivered == 0 ) break;
             }
         }
     }

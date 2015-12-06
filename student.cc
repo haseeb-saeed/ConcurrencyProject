@@ -5,8 +5,6 @@
 #include "watcardoffice.h"                  // WATCardOffice class
 #include "vendingmachine.h"                 // VendingMachine class
 #include "MPRNG.h"                          // MPRNG class
-#include <iostream>
-using namespace std;
 
 // External random number generator
 extern MPRNG mprng;

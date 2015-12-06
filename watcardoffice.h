@@ -17,8 +17,9 @@ _Task WATCardOffice {
         unsigned int sid;               // Student id
         unsigned int amount;            // Amount to withdraw
         WATCard* card;                  // WATCard to deposit to
+        char type;             // Request type
 
-        Args( unsigned int sid, unsigned int amount, WATCard* card );
+        Args( unsigned int sid, unsigned int amount, WATCard* card, char type );
     };
 
     // Job for a courier to execute
@@ -47,8 +48,11 @@ _Task WATCardOffice {
     const unsigned int numCouriers;     // Number of couriers
     uCondition bench;                   // Bench for couriers to wait on for a job
     std::deque<Job*> jobs;              // Queue for jobs
-    unsigned int numWaiting;            // Number of couriers waitinf for a job
+    unsigned int numWaiting;            // Number of couriers waiting for a job
+    Job* request;                       // Communication variable to store a job request
 
+    void assignRequest();              
+    void wakeCourier();
     void main();
 
   public:

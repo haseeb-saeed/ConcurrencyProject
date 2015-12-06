@@ -5,8 +5,6 @@
 #include "truck.h"                          // Truck class
 #include "MPRNG.h"                          // MPRNG class
 #include <assert.h>                         // assert
-#include <iostream>
-using namespace std;
 
 // External random number generator
 extern MPRNG mprng;

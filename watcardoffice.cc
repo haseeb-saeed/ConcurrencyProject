@@ -5,8 +5,8 @@
 #include "MPRNG.h"
 #include <assert.h>
 #include <deque>
+
 #include <iostream>
-using namespace std;
 
 // External random number generator
 extern MPRNG mprng;
@@ -14,8 +14,8 @@ extern MPRNG mprng;
 //---------------------------------------------------------------------
 // Constructor for Args struct
 //---------------------------------------------------------------------
-WATCardOffice::Args::Args( unsigned int sid, unsigned int amount, WATCard* card )
-    : sid( sid ), amount( amount ), card( card ) {
+WATCardOffice::Args::Args( unsigned int sid, unsigned int amount, WATCard* card, char type )
+    : sid( sid ), amount( amount ), card( card ), type( type ) {
 
 }
 
@@ -86,7 +86,8 @@ void WATCardOffice::Courier::main() {
 // Constructor for WATCardOffice task
 //---------------------------------------------------------------------
 WATCardOffice::WATCardOffice( Printer &prt, Bank &bank, unsigned int numCouriers )
-    : printer( prt ), bank( bank ), numCouriers( numCouriers ), bench(), jobs(), numWaiting( 0 ) {
+    : printer( prt ), bank( bank ), numCouriers( numCouriers ), bench(), jobs(), numWaiting( 0 ),
+        request( nullptr ) {
 
     
 }
@@ -96,33 +97,20 @@ WATCardOffice::WATCardOffice( Printer &prt, Bank &bank, unsigned int numCouriers
 //---------------------------------------------------------------------
 WATCard::FWATCard WATCardOffice::create( unsigned int sid, unsigned int amount ) {
 
-    // Add a new job to the list of requests
-    Job* job = new Job( Args( sid, amount, new WATCard() ) );
-    assert( job != nullptr );
-    jobs.push_back( job );
-
-    // Indicate the create call is complete
-    printer.print( Printer::Kind::WATCardOffice, 'C', sid, amount );
-
-    // Return the future value
-	return job->result;
+    request = new Job( Args( sid, amount, new WATCard(), 'C' ) );
+    assert( request != nullptr );
+    return request->result;
 }
-
+    
 //---------------------------------------------------------------------
 // Transfers money onto WATCard
 //---------------------------------------------------------------------
 WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount, WATCard* card ) {
 
-	// Add a new job to the list of requests
-    Job* job = new Job( Args( sid, amount, card ) );
-    assert( job != nullptr );
-    jobs.push_back( job );
-
-    // Indicate the transfer call is complete
-    printer.print( Printer::Kind::WATCardOffice, 'T', sid, amount );
-
-    // Return the future value
-    return job->result;
+    // Create a new request
+    request = new Job( Args( sid, amount, card, 'T' ) );
+    assert( request != nullptr );
+    return request->result;
 }
 
 //---------------------------------------------------------------------
@@ -130,26 +118,48 @@ WATCard::FWATCard WATCardOffice::transfer( unsigned int sid, unsigned int amount
 //---------------------------------------------------------------------
 WATCardOffice::Job* WATCardOffice::requestWork() {
 
-    // If there is no work, block
-    if ( jobs.empty() ) {
-        numWaiting += 1;
-        bench.wait();
-        numWaiting -= 1;
-     }
-
-    // nullptr means office is closing
-    if ( jobs.empty() ) {
-        return nullptr;
-    }
-
-    // Get the job at the front of the list
-    Job* job = jobs.front();
-    jobs.pop_front();
-
-    // Indicate the request call is complete
-    printer.print( Printer::Kind::WATCardOffice, 'W' );
+    // Block to get a job
+    Job* job = nullptr;
+    bench.wait( reinterpret_cast<uintptr_t>( &job ) );
     return job;
 }
+
+//---------------------------------------------------------------------
+// Assigns a request to the courier at the front of the queue 
+// Unblocks the courier afterwards
+//---------------------------------------------------------------------
+void WATCardOffice::assignRequest() {
+    
+    // If a courier is waiting for a request wake and there is one, them
+    if ( !bench.empty() && !jobs.empty() ) {
+    
+        // Get the job at the front of the list
+        Job* job = jobs.front();
+        jobs.pop_front();
+
+        // Give the courier the job
+        Job** courierJob = reinterpret_cast<Job**>( bench.front() );  
+        *courierJob = job;
+
+        // Wake them up
+        wakeCourier();
+    
+        // If there was a job request, print it
+        if ( job != nullptr ) {
+            printer.print( Printer::Kind::WATCardOffice, 'W' );
+        }
+    }
+}
+
+//---------------------------------------------------------------------
+// Wakes a blocked courier
+//---------------------------------------------------------------------
+void WATCardOffice::wakeCourier() {
+    
+    numWaiting -= 1;
+    bench.signalBlock();
+}
+
 
 //---------------------------------------------------------------------
 // Main function for WATCardOffice task
@@ -173,20 +183,31 @@ void WATCardOffice::main() {
         _When( numWaiting == numCouriers) _Accept( ~WATCardOffice ) {
 
             // Wake up the blocked couriers
-            while ( !bench.empty() ) {
-                bench.signalBlock();
+            while ( !bench.empty() ) { 
+                wakeCourier();
             }
 
             break;
 
         } or _Accept( create, transfer ) {
 
-            // If a courier is waiting for a request wake, them
-            if ( !bench.empty() ) {
-                bench.signalBlock();
-            }
+            // Indicate the transfer call is complete
+            Args args = request->args;
+            printer.print( Printer::Kind::WATCardOffice, args.type, args.sid, args.amount );
+
+            // Add the request to the list
+            jobs.push_back( request );
+
+            // Assign a request to a courier
+            assignRequest();
+
         } or _Accept( requestWork ) {
 
+            // Update the number of waiting couriers            
+            numWaiting += 1;
+
+            // Assign a request if possible
+            assignRequest();
         }
     }
 

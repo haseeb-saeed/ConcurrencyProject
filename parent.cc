@@ -32,8 +32,8 @@ void Parent::main() {
 
             // Yield and give a student some money
             yield( parentalDelay );
-            unsigned int student = mprng( numStudents - 1 );
             unsigned int amount = mprng( 1, 3 );
+            unsigned int student = mprng( numStudents - 1 );
 
             printer.print( Printer::Kind::Parent, 'D', student, amount );
             bank.deposit( student, amount );
