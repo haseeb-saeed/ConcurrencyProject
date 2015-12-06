@@ -6,8 +6,6 @@
 #include <assert.h>
 #include <deque>
 
-#include <iostream>
-
 // External random number generator
 extern MPRNG mprng;
 
