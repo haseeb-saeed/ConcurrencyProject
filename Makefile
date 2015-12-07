@@ -4,7 +4,7 @@
 
 # Compiler Options
 CXX = u++
-CXXFLAGS = -g -I"." -Wall -Wno-unused-label -Wfatal-errors -MMD -O2 -std=c++11
+CXXFLAGS = -g -multi -Wall -Wno-unused-label -Wfatal-errors -MMD -O2 -std=c++11
 MAKEFILE_NAME = ${firstword ${MAKEFILE_LIST}}
 
 # Main Source Files
